@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquivos Logísticos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="header-content">
+            <div class="header-info">
+                <h1>Arquivos Logísticos</h1>
+                <p>Ferramentas para NFe, ZPL e PROCEDA</p>
+            </div>
+            
+            <nav class="tab-navigation">
+                <button class="tab-button active" data-tab="zpl-viewer">📄 Visualizador ZPL</button>
+                <button class="tab-button" data-tab="nfe-zpl">📦 Gerar ZPL</button>
+                <button class="tab-button" data-tab="dv-validator">✓ Validador</button>
+                <button class="tab-button" data-tab="barcode-generator">📊 Código Barras</button>
+                <button class="tab-button" data-tab="proceda">🔧 PROCEDA</button>
+                </nav>
+        </div>
+    </header>
+
+    <main class="app-container">
+
+        <section id="zpl-viewer" class="tab-content active">
+            <div class="zpl-viewer-layout">
+                <div class="editor-column">
+                    <h2>Editor ZPL</h2>
+                    <textarea 
+                        id="zpl-input" 
+                        placeholder="Cole o seu código ZPL aqui...&#10;&#10;Exemplo:&#10;^XA&#10;^FO50,50^A0N,50,50^FDHello World!^FS&#10;^XZ"
+                    ></textarea>
+                    <button id="render-button" class="button-primary">🚀 Atualizar Pré-visualização</button>
+                </div>
+                <div class="viewer-column">
+                    <h2>Pré-visualização</h2>
+                    <div class="image-container">
+                        <img 
+                            id="label-image" 
+                            src="https://via.placeholder.com/400x600/f3f4f6/6b7280?text=Etiqueta+Aparece+Aqui" 
+                            alt="Pré-visualização da etiqueta"
+                        >
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="nfe-zpl" class="tab-content">
+            <h2 style="margin-bottom: 2rem; font-size: 2rem;">Gerar Etiqueta ZPL a partir de XML (NFe)</h2>
+            <div class="tool-card">
+                <h3>1. Carregar Ficheiro XML</h3>
+                <p style="color: var(--color-text-muted); margin-bottom: 1rem;">Selecione o arquivo XML da Nota Fiscal Eletrônica.</p>
+                <input type="file" id="xml-input" class="input-file" accept=".xml">
+            </div>
+            <div class="tool-card">
+                <h3>2. Código ZPL Gerado</h3>
+                <p style="color: var(--color-text-muted); margin-bottom: 1rem;">O código ZPL da etiqueta simplificada aparecerá abaixo.</p>
+                <textarea id="nfe-zpl-output" readonly placeholder="Aguardando carregamento do XML..."></textarea>
+                <div class="button-group">
+                    <button id="copy-zpl-button" class="button-secondary">📋 Copiar ZPL</button>
+                    <button id="send-to-viewer-button" class="button-primary">👁️ Ver no Visualizador</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="dv-validator" class="tab-content">
+            <h2 style="margin-bottom: 2rem; font-size: 2rem;">Validador de Dígito Verificador</h2>
+            <div class="tool-card">
+                <p style="color: var(--color-text-muted); margin-bottom: 1.5rem; font-size: 1.05rem;">Cole uma chave de NFe (44 dígitos) ou CT-e (44 dígitos) para validar se o Dígito Verificador (DV) está matematicamente correto usando o algoritmo Módulo 11.</p>
+                
+                <div class="form-group">
+                    <label for="dv-input">🔑 Chave de Acesso (44 dígitos):</label>
+                    <input type="text" id="dv-input" placeholder="Cole os 44 dígitos da chave aqui..." maxlength="44">
+                </div>
+                <button id="dv-validate-button" class="button-primary">✓ Validar Chave</button>
+                
+                <div id="dv-result-box" class="result-box" style="display: none;"></div>
+            </div>
+        </section>
+        
+        <section id="barcode-generator" class="tab-content">
+            <h2 style="margin-bottom: 2rem; font-size: 2rem;">Gerador de Código de Barras</h2>
+            <div class="tool-card">
+                <div class="form-group">
+                    <label for="barcode-data">📊 Dados para o Código:</label>
+                    <input type="text" id="barcode-data" placeholder="Ex: 1234567890123">
+                </div>
+                
+                <div class="form-group">
+                    <label for="barcode-format">📐 Formato do Código:</label>
+                    <select id="barcode-format">
+                        <option value="CODE128" selected>Code 128 (Padrão - Alfanumérico)</option>
+                        <option value="EAN13">EAN-13 (13 dígitos - Varejo)</option>
+                        <option value="EAN8">EAN-8 (8 dígitos - Pequeno)</option>
+                        <option value="UPC">UPC (12 dígitos - EUA/Canadá)</option>
+                        <option value="CODE39">Code 39 (Alfanumérico Legacy)</option>
+                    </select>
+                </div>
+                
+                <button id="barcode-generate-button" class="button-primary">🎨 Gerar Código</button>
+                
+                <div class="barcode-container">
+                    <svg id="barcode-output"></svg>
+                </div>
+            </div>
+        </section>
+
+        <section id="proceda" class="tab-content">
+            <h2 style="margin-bottom: 2rem; font-size: 2rem;">Validador de Arquivos EDI Logísticos</h2>
+            
+            <div class="tool-card">
+                <h3>📁 Carregar Arquivo EDI</h3>
+                <p style="color: var(--color-text-muted); margin-bottom: 1rem;">
+                    <strong>Suporta modelos:</strong><br>
+                    • <strong>NOTFIS 5.0</strong> - Dados de Notas Fiscais (320 caracteres, registros 50x)<br>
+                    • <strong>NOTFIS 3.1</strong> - Dados de Notas Fiscais (290 caracteres, registros 31x)<br>
+                    • <strong>OCOREN 5.0</strong> - Ocorrências na Entrega (320 caracteres, registros 51x)<br>
+                    • <strong>OCOREN 3.1</strong> - Ocorrências na Entrega (290 caracteres, registros 41x)<br>
+                    • <strong>PROCEDA</strong> - DELFOR, DELJIT, DESADV, INVOIC, INVRPT (EDIFACT)
+                </p>
+                <input type="file" id="proceda-input" class="input-file" accept=".txt,.edi,.proceda,.notfis,.ocoren">
+                
+                <div style="margin-top: 1rem;">
+                    <button id="open-edi-settings-modal" class="button-secondary">⚙️ Configurar Layouts</button>
+                </div>
+            </div>
+            
+            <div class="tool-card" id="proceda-tables" style="display: none;">
+                <h3>📊 Dados do Arquivo</h3>
+                <div style="margin-bottom: 1rem;">
+                    <label style="font-weight: 600; margin-right: 1rem;">Filtrar por Tipo de Registro:</label>
+                    <select id="proceda-filter" style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--color-border);">
+                        <option value="all">Todos os Registros</option>
+                    </select>
+                </div>
+                <div id="proceda-table-container" style="overflow-x: auto; max-height: 600px; overflow-y: auto;">
+                    </div>
+                <div class="button-group">
+                    <button id="proceda-export-csv" class="button-secondary">📥 Exportar CSV</button>
+                    <button id="proceda-export-json" class="button-secondary">📥 Exportar JSON</button>
+                    <button id="proceda-export-txt" class="button-secondary">📥 Exportar TXT</button>
+                </div>
+            </div>
+                
+            <div id="proceda-info" style="margin-top: 1.5rem; display: none;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="padding: 1rem; background: var(--color-bg-secondary); border-radius: 8px; border-left: 4px solid var(--color-primary);">
+                        <div style="font-size: 0.85rem; color: var(--color-text-muted);">Formato</div>
+                        <div id="proceda-modelo" style="font-size: 1.2rem; font-weight: 600; margin-top: 0.25rem;">-</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--color-bg-secondary); border-radius: 8px; border-left: 4px solid var(--color-secondary);">
+                        <div style="font-size: 0.85rem; color: var(--color-text-muted);">Versão</div>
+                        <div id="proceda-versao" style="font-size: 1.2rem; font-weight: 600; margin-top: 0.25rem;">-</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--color-bg-secondary); border-radius: 8px; border-left: 4px solid var(--color-success);">
+                        <div style="font-size: 0.85rem; color: var(--color-text-muted);">Total de Registros</div>
+                        <div id="proceda-linhas" style="font-size: 1.2rem; font-weight: 600; margin-top: 0.25rem;">-</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--color-bg-secondary); border-radius: 8px; border-left: 4px solid var(--color-error);">
+                        <div style="font-size: 0.85rem; color: var(--color-text-muted);">Status</div>
+                        <div id="proceda-status" style="font-size: 1.2rem; font-weight: 600; margin-top: 0.25rem;">-</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="proceda-errors" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--color-error-bg); border: 1px solid var(--color-error); border-radius: 8px;">
+                <h4 style="color: var(--color-error); margin-bottom: 0.5rem;">⚠️ Erros Encontrados:</h4>
+                <ul id="proceda-error-list" style="margin: 0; padding-left: 1.5rem; color: #dc2626;"></ul>
+            </div>
+            
+            <div id="proceda-warnings" style="display: none; margin-top: 1rem; padding: 1rem; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px;">
+                <h4 style="color: #d97706; margin-bottom: 0.5rem;">⚠️ Avisos:</h4>
+                <ul id="proceda-warning-list" style="margin: 0; padding-left: 1.5rem; color: #d97706;"></ul>
+            </div>
+        </section>
+
+        </main>
+
+    <div id="edi-settings-modal" class="modal-backdrop" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="margin: 0;">Configurações de Layout EDI</h2>
+                <button id="close-edi-settings-modal" class="modal-close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--color-text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                    Aqui você pode personalizar as posições de início (<b>Pos</b>) e o tamanho (<b>Tam</b>) de cada campo para os layouts de arquivo fixo.
+                    As posições são baseadas em 1 (o primeiro caractere é a posição 1).<br>
+                    Suas alterações são salvas automaticamente no seu navegador.
+                </p>
+                <div class="button-group" style="margin-bottom: 2rem;">
+                    <button id="edi-save-layouts" class="button-primary">💾 Salvar Alterações</button>
+                    <button id="edi-restore-layouts" class="button-secondary">🔄 Restaurar Padrões</button>
+                </div>
+                
+                <div class="edi-settings-tabs">
+                    </div>
+                
+                <div id="edi-settings-forms" style="margin-top: 1.5rem;">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

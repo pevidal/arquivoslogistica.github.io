@@ -1,0 +1,896 @@
+/* --- :ROOT (Paleta Cinza Claro) --- */
+:root {
+    --color-primary: #4b5563;
+    --color-primary-hover: #374151;
+    --color-primary-light: #e5e7eb;
+    --color-secondary: #6b7280;
+    --color-secondary-hover: #4b5563;
+    
+    --color-bg: #f9fafb;
+    --color-bg-secondary: #f3f4f6;
+    --color-card-bg: #ffffff;
+    --color-card-hover: #f9fafb;
+    
+    --color-text: #111827;
+    --color-text-muted: #6b7280;
+    --color-border: #e5e7eb;
+    
+    --color-success: #10b981;
+    --color-success-bg: #d1fae5;
+    --color-error: #ef4444;
+    --color-error-bg: #fee2e2;
+    
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    
+    --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
+    --font-code: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-main);
+    background: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* Header e Navigation Combinados */
+.app-header {
+    background: var(--color-card-bg);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+}
+
+.header-content {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.header-info {
+    flex-shrink: 0;
+}
+
+.app-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 0.25rem;
+}
+
+.app-header p {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Navigation */
+.tab-navigation {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.tab-button {
+    font-family: var(--font-main);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.625rem 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-card-bg);
+    cursor: pointer;
+    color: var(--color-text-muted);
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.tab-button:hover {
+    color: var(--color-text);
+    background: var(--color-bg-secondary);
+    border-color: var(--color-primary);
+}
+
+.tab-button.active {
+    color: white;
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .tab-navigation {
+        justify-content: flex-start;
+        width: 100%;
+    }
+}
+
+/* Container */
+.app-container {
+    padding: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cards */
+.tool-card {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+}
+
+.tool-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary);
+}
+
+.tool-card h3 {
+    color: var(--color-primary);
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tool-card h3::before {
+    content: '▸';
+    color: var(--color-secondary);
+}
+
+/* ZPL Viewer Layout */
+.zpl-viewer-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 1200px) {
+    .zpl-viewer-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.editor-column, .viewer-column {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+}
+
+.editor-column h2, .viewer-column h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.editor-column h2::before {
+    content: '⚡';
+    font-size: 1.8rem;
+}
+
+.viewer-column h2::before {
+    content: '👁️';
+    font-size: 1.8rem;
+}
+
+/* Textarea */
+textarea {
+    width: 100%;
+    min-height: 400px;
+    font-family: var(--font-code);
+    font-size: 0.9rem;
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-card-bg);
+    color: var(--color-text);
+    resize: vertical;
+    transition: all 0.2s ease;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.1);
+}
+
+#zpl-input {
+    min-height: 500px;
+}
+
+#nfe-zpl-output {
+    background: var(--color-bg-secondary);
+}
+
+/* Buttons */
+.button-primary, .button-secondary {
+    font-family: var(--font-main);
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.875rem 1.75rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.button-primary::before, .button-secondary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.5s, height 0.5s;
+}
+
+.button-primary:hover::before, .button-secondary:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.button-primary {
+    background: var(--color-primary);
+    color: white;
+}
+
+.button-primary:hover {
+    background: var(--color-primary-hover);
+    box-shadow: var(--shadow-md);
+}
+
+.button-primary:active {
+    transform: scale(0.98);
+}
+
+.button-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.button-secondary {
+    background: var(--color-card-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+
+.button-secondary:hover {
+    background: var(--color-bg-secondary);
+}
+
+#render-button {
+    width: 100%;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    padding: 1rem;
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+/* Input File */
+.input-file {
+    width: 100%;
+    padding: 1rem;
+    border: 2px dashed var(--color-border);
+    border-radius: 8px;
+    background: var(--color-bg-secondary);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.input-file:hover {
+    border-color: var(--color-primary);
+    background: var(--color-card-bg);
+}
+
+/* Image Container */
+.image-container {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 2rem;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#label-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: var(--shadow-md);
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+    font-size: 0.95rem;
+}
+
+input[type="text"], select {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    font-family: var(--font-main);
+    font-size: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-card-bg);
+    color: var(--color-text);
+    transition: all 0.2s ease;
+}
+
+input[type="text"]:focus, select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.1);
+}
+
+#dv-input {
+    font-family: var(--font-code);
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+}
+
+/* Result Box */
+.result-box {
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    border: 2px solid transparent;
+    animation: slideIn 0.4s ease;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.result-box.valid {
+    background: var(--color-success-bg);
+    color: #047857;
+    border-color: var(--color-success);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15);
+}
+
+.result-box.invalid {
+    background: var(--color-error-bg);
+    color: #dc2626;
+    border-color: var(--color-error);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15);
+}
+
+/* Barcode Container */
+.barcode-container {
+    text-align: center;
+    padding: 3rem;
+    margin-top: 1.5rem;
+    background: var(--color-bg-secondary);
+    border: 2px dashed var(--color-border);
+    border-radius: 8px;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#barcode-output {
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Loading State */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.loading {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+}
+
+/* Tabelas PROCEDA */
+.proceda-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    background: var(--color-card-bg);
+    box-shadow: var(--shadow-sm);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.proceda-table thead {
+    background: var(--color-primary);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.proceda-table th {
+    padding: 0.875rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.proceda-table tbody tr {
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color 0.2s ease;
+}
+
+.proceda-table tbody tr:hover {
+    background: var(--color-bg-secondary);
+}
+
+.proceda-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.proceda-table td {
+    padding: 0.75rem 0.875rem;
+    color: var(--color-text);
+}
+
+.proceda-table .segment-header {
+    background: var(--color-bg-secondary);
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.segment-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}/* ================================================= */
+/* ESTILOS PARA O MODAL DE CONFIGURAÇÕES EDI (POPUP) */
+/* ================================================= */
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    display: flex; /* Usado para centralizar o conteúdo */
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* JS vai mudar display: flex, então podemos animar a opacidade */
+.modal-backdrop[style*="display: flex"] {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-content {
+    background: var(--color-bg-primary);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Para o scroll do modal-body funcionar */
+    transform: scale(0.95);
+    transition: transform 0.2s ease-in-out;
+}
+
+.modal-backdrop[style*="display: flex"] .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--color-text-primary);
+}
+
+.modal-close-button {
+    font-size: 2rem;
+    line-height: 1;
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 0 0.5rem;
+    transition: color 0.2s;
+}
+.modal-close-button:hover {
+    color: var(--color-text-primary);
+}
+
+.modal-body {
+    padding: 1.5rem;
+    overflow-y: auto; /* Permite scroll se o conteúdo for grande */
+}
+
+
+/* ================================================= */
+/* ESTILOS PARA OS FORMULÁRIOS DENTRO DO MODAL       */
+/* ================================================= */
+
+.edi-settings-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 2px solid var(--color-border);
+}
+
+.edi-settings-tab-button {
+    padding: 0.75rem 1.25rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+}
+
+.edi-settings-tab-button:hover {
+    color: var(--color-text-primary);
+}
+
+.edi-settings-tab-button.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+
+.edi-settings-form-content {
+    padding-top: 1rem;
+}
+
+.edi-register-group {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-bg-secondary);
+}
+.edi-register-group h4 {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.edi-settings-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.edi-settings-table th,
+.edi-settings-table td {
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.edi-settings-table th {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+.edi-settings-table td:nth-child(1) { /* Nome do Campo */
+    width: 60%;
+    font-weight: 500;
+}
+.edi-settings-table td:nth-child(2),
+.edi-settings-table td:nth-child(3) { /* Pos e Tam */
+    width: 20%;
+}
+
+.input-sm {
+    width: 80px;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+}
+.input-sm:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+/* ... (todo o seu CSS anterior) ... */
+
+/* ================================================= */
+/* ESTILOS PARA O MODAL DE CONFIGURAÇÕES EDI (POPUP) */
+/* ================================================= */
+
+/* ================================================= */
+/* ESTILOS PARA O MODAL DE CONFIGURAÇÕES EDI (POPUP) */
+/* ================================================= */
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* MUDANÇA: Aumentei a opacidade de 0.6 para 0.75 para escurecer o fundo */
+    background-color: rgba(0, 0, 0, 0.75); 
+    z-index: 1000;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out;
+    
+    /* Fundo desfocado (vidro fosco) */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px); 
+}
+
+/* JS vai mudar display: flex, então podemos animar a opacidade */
+.modal-backdrop[style*="display: flex"] {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-content {
+    /* MUDANÇA: Adicionei um fundo branco explícito */
+    background-color: #ffffff; 
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; 
+    transform: scale(0.95);
+    transition: transform 0.2s ease-in-out;
+}
+
+.modal-backdrop[style*="display: flex"] .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb; /* Cor explícita */
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #111827; /* Cor explícita */
+}
+
+.modal-close-button {
+    font-size: 2rem;
+    line-height: 1;
+    background: none;
+    border: none;
+    color: #9ca3af; /* Cor explícita */
+    cursor: pointer;
+    padding: 0 0.5rem;
+    transition: color 0.2s;
+}
+.modal-close-button:hover {
+    color: #111827; /* Cor explícita */
+}
+
+.modal-body {
+    padding: 1.5rem;
+    overflow-y: auto; 
+    /* Cor de fundo para o corpo do modal */
+    background-color: #f9fafb; 
+}
+
+
+/* ================================================= */
+/* ESTILOS PARA OS FORMULÁRIOS DENTRO DO MODAL       */
+/* ================================================= */
+
+.edi-settings-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 2px solid #e5e7eb; /* Cor explícita */
+    background-color: #ffffff;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.edi-settings-tab-button {
+    padding: 0.75rem 1.25rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #6b7280; /* Cor explícita */
+    font-size: 1rem;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+}
+
+.edi-settings-tab-button:hover {
+    color: #111827; /* Cor explícita */
+}
+
+.edi-settings-tab-button.active {
+    color: #4f46e5; /* Cor primária (exemplo) */
+    border-bottom-color: #4f46e5; /* Cor primária (exemplo) */
+}
+
+.edi-settings-form-content {
+    padding-top: 1rem;
+}
+
+.edi-register-group {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border: 1px solid #e5e7eb; /* Cor explícita */
+    border-radius: 8px;
+    background: #ffffff; /* Cor explícita */
+}
+.edi-register-group h4 {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.edi-settings-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.edi-settings-table th,
+.edi-settings-table td {
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb; /* Cor explícita */
+}
+
+.edi-settings-table th {
+    font-size: 0.85rem;
+    color: #6b7280; /* Cor explícita */
+}
+
+.edi-settings-table td:nth-child(1) { /* Nome do Campo */
+    width: 60%;
+    font-weight: 500;
+}
+.edi-settings-table td:nth-child(2),
+.edi-settings-table td:nth-child(3) { /* Pos e Tam */
+    width: 20%;
+}
+
+.input-sm {
+    width: 80px;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    border: 1px solid #d1d5db; /* Cor explícita */
+    background: #ffffff; /* Cor explícita */
+    color: #111827; /* Cor explícita */
+}
+.input-sm:focus {
+    outline: none;
+    border-color: #4f46e5; /* Cor primária (exemplo) */
+    box-shadow: 0 0 0 2px #c7d2fe; /* Cor primária clara (exemplo) */
+}
+/* ... (o resto do seu CSS para .modal-content, .modal-header, etc. continua igual) ... */
