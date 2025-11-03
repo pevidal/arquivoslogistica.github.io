@@ -1319,7 +1319,70 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         baixarArquivo(txt, `${data.modelo.toLowerCase().replace(/\s/g, '_')}_${new Date().getTime()}.txt`, 'text/plain');
     }
+/**
+     * NOVO: Analisador principal de EDI.
+     * Detecta o tipo de arquivo (Fixo ou EDIFACT) e chama o parser correto.
+     */
+    function parseEDI(conteudo) {
+        const linhas = conteudo.split(/\r?\n/);
+        
+        // Encontra a primeira linha com conteúdo real
+        const primeiraLinhaValida = linhas.find(l => 
+            l.trim().length > 3 && 
+            !l.startsWith("000") // Ignora o registro 000 comum em alguns NOTFIS
+        );
 
+        if (!primeiraLinhaValida) {
+            // Tenta o '000' se SÓ tiver ele e mais nada
+            const header000 = linhas.find(l => l.startsWith("000"));
+            if(header000) {
+                // Tenta adivinhar pelo nome 'NOT' ou 'OCO' no header
+                if (header000.includes("NOT")) return parseArquivoFixo(linhas, 'NOTFIS.3.1'); // Chute
+                if (header000.includes("OCO")) return parseArquivoFixo(linhas, 'OCOREN.3.1'); // Chute
+            }
+            throw new Error("Arquivo EDI está vazio ou não contém registros válidos.");
+        }
+
+        const linhaLimpa = primeiraLinhaValida.trimEnd();
+        const identificador = linhaLimpa.substring(0, 3);
+
+        // 1. Detecção de EDIFACT (PROCEDA)
+        if (identificador === "UNB" || identificador === "UNH") {
+            return parsePROCEDA(linhas);
+        }
+
+        // 2. Detecção de Formato Fixo (NOTFIS/OCOREN)
+        const allLayouts = getLayouts();
+        let modeloDetectado = null;
+
+        // Tenta detectar pelo identificador e tamanho da linha
+        for (const layoutKey in allLayouts) {
+            const layout = allLayouts[layoutKey];
+            // Verifica se o identificador existe nos registros E se o tamanho da linha bate com o tamanho esperado
+            if (layout.registros[identificador] && layout.tamanho === linhaLimpa.length) {
+                modeloDetectado = layoutKey.replace('_', '.'); // Converte NOTFIS_5_0 para NOTFIS.5.0
+                break;
+            }
+        }
+        
+        // Se não achou pelo tamanho exato, tenta só pelo identificador (aceita warnings de tamanho depois)
+        if (!modeloDetectado) {
+             for (const layoutKey in allLayouts) {
+                if (allLayouts[layoutKey].registros[identificador]) {
+                    modeloDetectado = layoutKey.replace('_', '.');
+                    break;
+                }
+            }
+        }
+
+        // Se encontrou um modelo correspondente
+        if (modeloDetectado) {
+            return parseArquivoFixo(linhas, modeloDetectado);
+        }
+
+        // 3. Se não for nenhum dos dois
+        throw new Error(`Modelo de arquivo EDI não reconhecido. Identificador: ${identificador}, Tamanho: ${linhaLimpa.length}`);
+    }
     function baixarArquivo(conteudo, nomeArquivo, tipo) {
         const blob = new Blob([conteudo], {
             type: tipo
