@@ -21,6 +21,7 @@
                 <button class="tab-button" data-tab="reports-advanced">📊 Relatórios de Notas fiscais</button>
                 <button class="tab-button" data-tab="barcode-generator">🔨 Gerador de Código Barras</button>
                 <button class="tab-button" data-tab="proceda">🔧 Validador de PROCEDA</button>
+                <button class="tab-button" data-tab="featured-products" style="color: #d97706; border-color: #d97706;">⭐ Sugestões</button>
             </nav>
         </div>
     </header>
@@ -297,7 +298,13 @@
                 <ul id="proceda-warning-list" style="margin: 0; padding-left: 1.5rem; color: #d97706;"></ul>
             </div>
         </section>
-
+        <section id="featured-products" class="tab-content">
+            <h2 style="margin-bottom: 2rem; font-size: 2rem;">⭐ Produtos Sugeridos</h2>
+            
+            <div class="product-showcase" id="showcase-container">
+                <p style="grid-column: 1 / -1; color: var(--color-text-muted);">A carregar sugestões...</p>
+            </div>
+        </section>
         </main>
 
     <div id="edi-settings-modal" class="modal-backdrop" style="display: none;">
