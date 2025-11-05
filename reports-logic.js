@@ -27,8 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Verifica dependências
     if (typeof parseXML !== 'function') {
-        console.error("ERRO CRÍTICO: Função parseXML não encontrada. Verifique se utils.js está carregado.");
-        alert("Erro de configuração: O arquivo 'utils.js' parece estar desatualizado ou ausente. Por favor, recarregue a página.");
+        console.error("ERRO CRÍTICO: Função parseXML não encontrada.");
+        alert("Erro: utils.js não carregado corretamente.");
     }
 
     // --- Listeners ---
@@ -36,13 +36,12 @@ document.addEventListener("DOMContentLoaded", () => {
         reportTypeRadios.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 currentReportType = e.target.value;
-                console.log("Tipo de relatório alterado para:", currentReportType);
                 if (currentReportType === 'items') {
                     if (textInputContainer) textInputContainer.style.opacity = '0.5';
                     if (textInput) {
                         textInput.disabled = true;
                         textInput.placeholder = "Relatório de itens requer ficheiros XML completos.";
-                        textInput.value = ""; // Limpa o texto ao mudar para itens
+                        textInput.value = "";
                     }
                 } else {
                     if (textInputContainer) textInputContainer.style.opacity = '1';
@@ -65,51 +64,33 @@ document.addEventListener("DOMContentLoaded", () => {
         if (summaryArea) summaryArea.style.display = "none";
         if (resultsContainer) resultsContainer.style.display = "none";
         if (textInput) textInput.value = "";
-        // Não limpamos o fileInput aqui para permitir reprocessar se necessário, 
-        // mas se quiser limpar, descomente a linha abaixo:
-        // if (fileInput) fileInput.value = "";
     }
 
     async function processarRelatorio() {
-        console.log("Iniciando processamento...");
         resetUI();
-        
         if (loadingArea) loadingArea.style.display = "block";
         if (processBtn) processBtn.disabled = true;
 
-        // Pequeno delay para permitir que a UI atualize e mostre o "loading"
+        // Pequeno delay para a UI atualizar
         await new Promise(resolve => setTimeout(resolve, 50));
 
         try {
-            let processedCount = 0;
-
             // 1. Processa Texto
             if (currentReportType === 'header' && textInput && textInput.value.trim()) {
-                console.log("Processando entrada de texto...");
                 processarChavesTexto();
-                processedCount++;
             }
 
             // 2. Processa XMLs
             if (fileInput && fileInput.files.length > 0) {
-                console.log(`Processando ${fileInput.files.length} ficheiros XML...`);
                 await processarFicheirosXML();
-                processedCount++;
-            } else {
-                console.log("Nenhum ficheiro selecionado no input.");
-            }
-
-            if (processedCount === 0) {
-                alert("Por favor, cole chaves de acesso ou selecione ficheiros XML para processar.");
             }
 
             // 3. Renderiza
-            console.log("Processamento concluído. Registros gerados:", reportData.length);
             atualizarInterface();
 
         } catch (error) {
-            console.error("Erro fatal no processamento:", error);
-            alert("Ocorreu um erro inesperado: " + error.message);
+            console.error("Erro no processamento:", error);
+            alert("Ocorreu um erro: " + error.message);
         } finally {
             if (loadingArea) loadingArea.style.display = "none";
             if (processBtn) processBtn.disabled = false;
@@ -125,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (chave.length === 44) {
                 reportData.push(extrairDadosBasicosChave(chave));
             } else if (chave.length > 0) {
-                 reportData.push({ valido: false, origem: 'Texto', chave: chave, erro: `Tamanho inválido (${chave.length} dígitos)` });
+                 reportData.push({ valido: false, origem: 'Texto', chave: chave, erro: `Tamanho inválido (${chave.length})` });
             }
         });
     }
@@ -138,12 +119,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (currentReportType === 'header') {
             reportData.push(...results);
         } else {
-            // Para itens, 'results' é um array de arrays (ou objetos de erro)
             results.forEach(res => {
                 if (Array.isArray(res)) {
                     reportData.push(...res);
                 } else {
-                    // Se não for array, é um objeto de erro único para aquele arquivo
                     reportData.push(res);
                 }
             });
@@ -155,54 +134,20 @@ document.addEventListener("DOMContentLoaded", () => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
-                    // Tenta fazer o parse do XML
-                    const xmlString = e.target.result;
-                    if (!xmlString || xmlString.trim() === "") {
-                         resolve({ valido: false, origem: file.name, chave: 'N/A', erro: "Arquivo vazio" });
-                         return;
-                    }
-
-                    const xmlDoc = parseXML(xmlString); // Usa utils.js
-
+                    const xmlDoc = parseXML(e.target.result); 
                     if (currentReportType === 'header') {
                         resolve(extrairCabecalhoExpandido(xmlDoc, file.name));
                     } else {
                         resolve(extrairItensDoXML(xmlDoc, file.name));
                     }
                 } catch (err) {
-                    console.warn(`Erro ao ler arquivo ${file.name}:`, err);
-                    resolve({ valido: false, origem: file.name, chave: 'ERRO LEITURA', erro: err.message || "Falha ao ler XML" });
+                    // Mesmo com erro de parse XML, tenta retornar algo
+                    resolve({ valido: false, origem: file.name, chave: 'ERRO LEITURA', erro: "Arquivo corrompido ou não é XML" });
                 }
             };
-            reader.onerror = () => {
-                resolve({ valido: false, origem: file.name, chave: 'ERRO IO', erro: "Erro de I/O ao ler arquivo local" });
-            };
+            reader.onerror = () => resolve({ valido: false, origem: file.name, chave: 'ERRO IO', erro: "Erro ao ler arquivo" });
             reader.readAsText(file);
         });
-    }
-
-    // --- VALIDAÇÃO ESTRUTURAL (SCHEMA SIMULADO) ---
-    
-    function validarEstruturaNFe(xmlDoc) {
-        const erros = [];
-        const root = xmlDoc.documentElement;
-
-        // Verifica se é um XML de NFe válido (aceita NFe pura ou nfeProc que é o mais comum)
-        if (root.nodeName !== 'NFe' && root.nodeName !== 'nfeProc') {
-            // Tenta ser flexível: talvez seja um CTe?
-            if (root.nodeName === 'CTe' || root.nodeName === 'cteProc') {
-                 return ["Este parece ser um CTe. O relatório atual é otimizado para NFe."];
-            }
-            return [`XML não reconhecido (Raiz: <${root.nodeName}>). Esperado: <nfeProc> ou <NFe>`];
-        }
-
-        // Verifica a tag principal de informações
-        const infNFe = xmlDoc.querySelector('infNFe');
-        if (!infNFe) {
-            return ["Tag <infNFe> não encontrada. Estrutura inválida."];
-        }
-        
-        return true;
     }
 
     // --- EXTRAÇÃO DE DADOS ---
@@ -213,48 +158,69 @@ document.addEventListener("DOMContentLoaded", () => {
             valido: dvValido,
             origem: 'Texto',
             chave: chave,
-            erro: dvValido ? null : "Dígito Verificador (DV) inválido",
+            // Se DV inválido, marcamos o erro, mas mantemos os dados extraíveis
+            erro: dvValido ? null : "Dígito Verificador inválido",
             nNF: parseInt(chave.substring(25, 34)) || 0,
             serie: parseInt(chave.substring(22, 25)) || 0,
             dataEmissao: `${chave.substring(4, 6)}/20${chave.substring(2, 4)}`,
             emitente: formatarCNPJ(chave.substring(6, 20)),
-            vNF: 0, vBC: 0, vICMS: 0, vFrete: 0, vIPI: 0 // Valores zerados para entrada via texto
+            vNF: 0 // Sem valor no texto
         };
     }
 
     function extrairCabecalhoExpandido(xmlDoc, origem) {
         try {
-            const validacao = validarEstruturaNFe(xmlDoc);
-            if (Array.isArray(validacao)) {
-                 let possivelChave = xmlDoc.querySelector("infNFe")?.getAttribute("Id")?.replace("NFe", "") ||
-                                     xmlDoc.querySelector("infCte")?.getAttribute("Id")?.replace("CTe", "") || 'DESCONHECIDA';
-
-                return { valido: false, origem: origem, chave: possivelChave, erro: "Falha Estrutural: " + validacao.join("; ") };
-            }
-
-            let chave = xmlDoc.querySelector("infNFe")?.getAttribute("Id")?.replace("NFe", "") || "";
+            // Tenta extrair a chave mesmo se a estrutura não for perfeita
+            let chave = xmlDoc.querySelector("infNFe")?.getAttribute("Id")?.replace("NFe", "") || 
+                        xmlDoc.querySelector("infCte")?.getAttribute("Id")?.replace("CTe", "") || "";
+            
             const txt = (tag) => xmlDoc.querySelector(tag)?.textContent || "";
             const num = (tag) => parseFloat(xmlDoc.querySelector(tag)?.textContent || "0");
 
+            // Verifica integridade básica
+            let erro = null;
+            let valido = true;
+
+            if (chave.length !== 44) {
+                valido = false;
+                erro = "Chave de acesso não encontrada ou inválida";
+            } else if (!validarDV(chave)) {
+                // ATENÇÃO: Marcamos como inválido para o contador, mas vamos extrair os dados na mesma!
+                valido = false; 
+                erro = "Dígito Verificador inválido";
+            }
+
             const dhEmi = txt("ide dhEmi") || txt("ide dEmi");
-            const tpNF_cod = txt("ide tpNF");
+            const protNFe = xmlDoc.querySelector("protNFe") || xmlDoc.querySelector("protCTe");
 
             return {
-                valido: (chave.length === 44 && validarDV(chave)),
+                valido: valido,
                 origem: origem,
-                chave: chave,
-                erro: (chave.length === 44 && !validarDV(chave)) ? "Dígito Verificador inválido" : null,
+                chave: chave || 'DESCONHECIDA',
+                erro: erro,
+                
+                // Dados Gerais
                 natOp: txt("ide natOp"),
                 nNF: txt("ide nNF"),
                 serie: txt("ide serie"),
-                tpNF: tpNF_cod === "0" ? "0-Entrada" : (tpNF_cod === "1" ? "1-Saída" : tpNF_cod),
+                tpNF: txt("ide tpNF") === "0" ? "0-Entrada" : (txt("ide tpNF") === "1" ? "1-Saída" : txt("ide tpNF")),
                 dataEmissao: dhEmi ? formatarData(dhEmi) : "-",
+                
+                // Protocolo (NOVOS CAMPOS)
+                nProt: protNFe?.querySelector("nProt")?.textContent || "-",
+                dhRecbto: protNFe?.querySelector("dhRecbto")?.textContent ? formatarData(protNFe.querySelector("dhRecbto").textContent) : "-",
+                cStat: protNFe?.querySelector("cStat")?.textContent || "-",
+                xMotivo: protNFe?.querySelector("xMotivo")?.textContent || "-",
+
+                // Participantes
                 emitente: txt("emit xNome"),
                 cnpjEmit: formatarCNPJ(txt("emit CNPJ")),
                 ufOrigem: txt("emit enderEmit UF"),
                 destinatario: txt("dest xNome") || "CONSUMIDOR",
                 cnpjDest: formatarCNPJ(txt("dest CNPJ") || txt("dest CPF")) || "-",
                 ufDestino: txt("dest enderDest UF") || "-",
+
+                // Valores Financeiros
                 vNF: num("total ICMSTot vNF"),
                 vBC: num("total ICMSTot vBC"),
                 vICMS: num("total ICMSTot vICMS"),
@@ -262,56 +228,47 @@ document.addEventListener("DOMContentLoaded", () => {
                 vST: num("total ICMSTot vST"),
                 vProd: num("total ICMSTot vProd"),
                 vFrete: num("total ICMSTot vFrete"),
-                vSeg: num("total ICMSTot vSeg"),
-                vDesc: num("total ICMSTot vDesc"),
-                vIPI: num("total ICMSTot vIPI"),
-                vPIS: num("total ICMSTot vPIS"),
-                vCOFINS: num("total ICMSTot vCOFINS")
+                vIPI: num("total ICMSTot vIPI")
             };
+
         } catch (e) {
-            console.error("Erro ao extrair cabeçalho:", e);
-            return { valido: false, origem: origem, chave: 'ERRO PROC', erro: "Erro ao extrair dados: " + e.message };
+            return { valido: false, origem: origem, chave: 'ERRO EXTRAÇÃO', erro: e.message };
         }
     }
 
     function extrairItensDoXML(xmlDoc, origem) {
         try {
-            const validacao = validarEstruturaNFe(xmlDoc);
-             if (Array.isArray(validacao)) {
-                return [{ valido: false, origem: origem, chave: 'N/A', erro: validacao[0] }];
-            }
-
             let chave = xmlDoc.querySelector("infNFe")?.getAttribute("Id")?.replace("NFe", "") || "";
+            // Se não achou chave, tenta continuar mesmo assim se tiver itens
+            
             const nNF = xmlDoc.querySelector("ide nNF")?.textContent || "";
             const itens = [];
             const detNodes = xmlDoc.querySelectorAll("det");
 
             if (detNodes.length === 0) {
-                 return [{ valido: false, origem: origem, chave: chave, erro: "Nenhum item de produto encontrado." }];
+                 return [{ valido: false, origem: origem, chave: chave || 'N/A', erro: "Nenhum item encontrado." }];
             }
 
             detNodes.forEach(det => {
-                const nItem = det.getAttribute("nItem");
                 const prod = det.querySelector("prod");
                 const imposto = det.querySelector("imposto");
                 
+                // Tenta encontrar CST/CSOSN de forma resiliente
                 let cst_csosn = "";
                 if (imposto) {
-                    // Tenta encontrar qualquer tag que termine em 'ICMS' (ICMS00, ICMSSN102, etc)
-                    const icmsTag = Array.from(imposto.children).find(el => el.nodeName.includes('ICMS'));
-                    if (icmsTag && icmsTag.firstElementChild) {
-                         cst_csosn = icmsTag.firstElementChild.querySelector("CST")?.textContent || 
-                                     icmsTag.firstElementChild.querySelector("CSOSN")?.textContent || "";
-                    }
+                     const tagsTributacao = imposto.querySelectorAll("CST, CSOSN");
+                     if (tagsTributacao.length > 0) {
+                         cst_csosn = tagsTributacao[0].textContent;
+                     }
                 }
 
                 itens.push({
-                    valido: true, origem: origem, chave: chave, nNF: nNF, nItem: nItem,
+                    valido: true, origem: origem, chave: chave, nNF: nNF,
+                    nItem: det.getAttribute("nItem"),
                     cProd: prod.querySelector("cProd")?.textContent || "",
                     cEAN: prod.querySelector("cEAN")?.textContent || "",
                     xProd: prod.querySelector("xProd")?.textContent || "",
                     NCM: prod.querySelector("NCM")?.textContent || "",
-                    CEST: prod.querySelector("CEST")?.textContent || "",
                     CFOP: prod.querySelector("CFOP")?.textContent || "",
                     uCom: prod.querySelector("uCom")?.textContent || "",
                     qCom: parseFloat(prod.querySelector("qCom")?.textContent || "0"),
@@ -319,18 +276,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     vProd: parseFloat(prod.querySelector("vProd")?.textContent || "0"),
                     xPed: prod.querySelector("xPed")?.textContent || "",
                     nItemPed: prod.querySelector("nItemPed")?.textContent || "",
-                    CST_CSOSN: cst_csosn,
-                    // Tenta pegar valores de impostos de forma mais genérica
-                    vICMSItem: parseFloat(imposto?.getElementsByTagName("vICMS")[0]?.textContent || "0"),
-                    pICMS: parseFloat(imposto?.getElementsByTagName("pICMS")[0]?.textContent || "0"),
-                    vIPIItem: parseFloat(imposto?.getElementsByTagName("vIPI")[0]?.textContent || "0")
+                    CST_CSOSN: cst_csosn
                 });
             });
-
             return itens;
         } catch (e) {
-            console.error("Erro ao extrair itens:", e);
-            return [{ valido: false, origem: origem, chave: 'ERRO ITENS', erro: "Falha ao ler itens: " + e.message }];
+            return [{ valido: false, origem: origem, chave: 'ERRO ITENS', erro: e.message }];
         }
     }
 
@@ -338,7 +289,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function atualizarInterface() {
         if (reportData.length === 0) {
-            alert("Nenhum dado foi processado. Verifique se selecionou arquivos válidos.");
+            alert("Nenhum dado encontrado para exibir.");
             return;
         }
 
@@ -349,9 +300,14 @@ document.addEventListener("DOMContentLoaded", () => {
         reportData.forEach(item => {
             if (item.valido) {
                 countValid++;
-                totalValue += (currentReportType === 'header' ? (item.vNF || 0) : (item.vProd || 0));
             } else {
                 countInvalid++;
+            }
+            // Soma valores mesmo se marcado como inválido (para casos de DV errado mas XML legível)
+            if (currentReportType === 'header') {
+                totalValue += (item.vNF || 0);
+            } else {
+                totalValue += (item.vProd || 0);
             }
             adicionarLinhaTabela(item);
         });
@@ -368,9 +324,25 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!tableHead) return;
         let headerHTML = "";
         if (currentReportType === 'header') {
-            headerHTML = `<tr><th>Status</th><th>Chave de Acesso</th><th>Num.</th><th>Série</th><th>Emissão</th><th>Tipo</th><th>Nat. Operação</th><th>Emitente</th><th>UF Orig</th><th>Destinatário</th><th>UF Dest</th><th>Vlr. Total</th><th>BC ICMS</th><th>Vlr. ICMS</th><th>Vlr. Frete</th><th>Vlr. IPI</th></tr>`;
+            headerHTML = `
+                <tr>
+                    <th>Status</th>
+                    <th>Chave de Acesso</th>
+                    <th>Num.</th>
+                    <th>Série</th>
+                    <th>Emissão</th>
+                    <th>Prot. Autorização</th>
+                    <th>Data Aut.</th>
+                    <th>cStat</th>
+                    <th>Emitente</th>
+                    <th>Destinatário</th>
+                    <th>Vlr. Total</th>
+                    <th>Vlr. ICMS</th>
+                    <th>Vlr. IPI</th>
+                </tr>
+            `;
         } else {
-            headerHTML = `<tr><th>Chave NF</th><th>NF</th><th>#</th><th>Cód. Prod.</th><th>EAN</th><th>Descrição Produto</th><th>NCM</th><th>CEST</th><th>CFOP</th><th>CST</th><th>Und.</th><th>Qtd.</th><th>Vlr. Unit.</th><th>Vlr. Total</th><th>Ped. Compra</th></tr>`;
+            headerHTML = `<tr><th>Chave NF</th><th>NF</th><th>#</th><th>Cód.</th><th>EAN</th><th>Descrição</th><th>NCM</th><th>CFOP</th><th>CST</th><th>Und.</th><th>Qtd.</th><th>Vlr. Unit.</th><th>Vlr. Total</th><th>Ped.</th></tr>`;
         }
         tableHead.innerHTML = headerHTML;
     }
@@ -378,20 +350,45 @@ document.addEventListener("DOMContentLoaded", () => {
     function adicionarLinhaTabela(item) {
         if (!tableBody) return;
         const tr = document.createElement('tr');
-        if (!item.valido) {
-            const colSpan = currentReportType === 'header' ? 16 : 15;
-            tr.innerHTML = `<td colspan="${colSpan}" style="background-color: #fee2e2; color: #991b1b; font-weight: 500;">❌ <strong>${item.origem}:</strong> ${item.erro || 'Erro desconhecido'} (Chave: ${item.chave || 'N/A'})</td>`;
-            tableBody.appendChild(tr);
-            return;
+        
+        // Se tiver erro CRÍTICO que impediu a leitura da chave, mostra linha de erro total
+        if (!item.valido && (item.chave === 'ERRO LEITURA' || item.chave === 'ERRO EXTRAÇÃO')) {
+             const colSpan = currentReportType === 'header' ? 13 : 14;
+             tr.innerHTML = `<td colspan="${colSpan}" style="background-color: #fee2e2; color: #991b1b;">❌ <strong>${item.origem}:</strong> ${item.erro}</td>`;
+             tableBody.appendChild(tr);
+             return;
         }
+
+        // Para erros "leves" (ex: DV inválido), mostra os dados mas com indicador de erro
+        let statusCell = item.valido 
+            ? '<td title="Válido">✅</td>'
+            : `<td title="${item.erro}" style="background-color: #fee2e2; cursor: help;">⚠️</td>`;
 
         if (currentReportType === 'header') {
             tr.innerHTML = `
-                <td title="Válido">✅</td><td style="font-family: monospace; font-size: 0.85em;">${item.chave}</td><td>${item.nNF}</td><td>${item.serie}</td><td>${item.dataEmissao}</td><td>${item.tpNF}</td><td title="${item.natOp}">${limitarTexto(item.natOp, 15)}</td><td title="${item.emitente}">${limitarTexto(item.emitente, 15)}</td><td>${item.ufOrigem}</td><td title="${item.destinatario}">${limitarTexto(item.destinatario, 15)}</td><td>${item.ufDestino}</td><td><strong>${formatarValor(item.vNF)}</strong></td><td>${formatarValor(item.vBC)}</td><td>${formatarValor(item.vICMS)}</td><td>${formatarValor(item.vFrete)}</td><td>${formatarValor(item.vIPI)}</td>
+                ${statusCell}
+                <td style="font-family: monospace; font-size: 0.85em;">${item.chave}</td>
+                <td>${item.nNF || '-'}</td>
+                <td>${item.serie || '-'}</td>
+                <td>${item.dataEmissao || '-'}</td>
+                <td>${item.nProt || '-'}</td>
+                <td>${item.dhRecbto || '-'}</td>
+                <td title="${item.xMotivo || ''}">${item.cStat || '-'}</td>
+                <td title="${item.cnpjEmit}">${limitarTexto(item.emitente, 15)}</td>
+                <td title="${item.cnpjDest}">${limitarTexto(item.destinatario, 15)}</td>
+                <td><strong>${formatarValor(item.vNF)}</strong></td>
+                <td>${formatarValor(item.vICMS)}</td>
+                <td>${formatarValor(item.vIPI)}</td>
             `;
         } else {
              tr.innerHTML = `
-                <td style="font-family: monospace; font-size: 0.8em;" title="${item.chave}">${item.chave.substring(0, 4)}...${item.chave.substring(40)}</td><td>${item.nNF}</td><td>${item.nItem}</td><td>${item.cProd}</td><td>${item.cEAN}</td><td title="${item.xProd}">${limitarTexto(item.xProd, 25)}</td><td>${item.NCM}</td><td>${item.CEST}</td><td>${item.CFOP}</td><td>${item.CST_CSOSN}</td><td>${item.uCom}</td><td>${fmtDec(item.qCom, 2)}</td><td>${fmtDec(item.vUnCom, 2)}</td><td><strong>${formatarValor(item.vProd)}</strong></td><td>${item.xPed ? (item.xPed + (item.nItemPed ? '/'+item.nItemPed : '')) : '-'}</td>
+                <td style="font-family: monospace; font-size: 0.8em;" title="${item.chave}">${item.chave.substring(0, 4)}...</td>
+                <td>${item.nNF}</td><td>${item.nItem}</td><td>${item.cProd}</td><td>${item.cEAN}</td>
+                <td title="${item.xProd}">${limitarTexto(item.xProd, 20)}</td>
+                <td>${item.NCM}</td><td>${item.CFOP}</td><td>${item.CST_CSOSN}</td>
+                <td>${item.uCom}</td><td>${fmtDec(item.qCom, 2)}</td>
+                <td>${fmtDec(item.vUnCom, 2)}</td><td><strong>${formatarValor(item.vProd)}</strong></td>
+                <td>${item.xPed || '-'}</td>
             `;
         }
         tableBody.appendChild(tr);
@@ -416,20 +413,19 @@ document.addEventListener("DOMContentLoaded", () => {
         if (reportData.length === 0) return;
         let csv = "";
         if (currentReportType === 'header') {
-            csv = "Origem;Chave;Numero;Serie;Emissao;Tipo;Natureza Operacao;Emitente;CNPJ Emit;UF Orig;Destinatario;CNPJ Dest;UF Dest;Vlr Total NF;Base ICMS;Vlr ICMS;Vlr BC ST;Vlr ST;Vlr Produtos;Vlr Frete;Vlr Seguro;Vlr Desconto;Vlr IPI;Vlr PIS;Vlr COFINS;Erro\n";
+            csv = "Status;Origem;Erro;Chave;Numero;Serie;Emissao;Tipo;Nat Operacao;Protocolo;Data Aut;Status SEFAZ;Motivo Status;Emitente;CNPJ Emit;UF Orig;Destinatario;CNPJ Dest;UF Dest;Vlr Total NF;Base ICMS;Vlr ICMS;Vlr BC ST;Vlr ST;Vlr Prod;Vlr Frete;Vlr Seg;Vlr Desc;Vlr IPI;Vlr PIS;Vlr COFINS\n";
             reportData.forEach(d => {
-               const status = d.valido ? "VALIDO" : "INVALIDO";
-               csv += `"${d.origem}";"${d.chave}";${d.nNF||''};${d.serie||''};"${d.dataEmissao||''}";"${d.tpNF||''}";"${d.natOp||''}";"${d.emitente||''}";"${d.cnpjEmit||''}";"${d.ufOrigem||''}";"${d.destinatario||''}";"${d.cnpjDest||''}";"${d.ufDestino||''}";${fmtCsv(d.vNF)};${fmtCsv(d.vBC)};${fmtCsv(d.vICMS)};${fmtCsv(d.vBCST)};${fmtCsv(d.vST)};${fmtCsv(d.vProd)};${fmtCsv(d.vFrete)};${fmtCsv(d.vSeg)};${fmtCsv(d.vDesc)};${fmtCsv(d.vIPI)};${fmtCsv(d.vPIS)};${fmtCsv(d.vCOFINS)};"${d.erro||''}"\n`;
+               const status = d.valido ? "VALIDO" : "INVALIDO/ERRO";
+               csv += `"${status}";"${d.origem}";"${d.erro||''}";"${d.chave||''}";${d.nNF||''};${d.serie||''};"${d.dataEmissao||''}";"${d.tpNF||''}";"${d.natOp||''}";"${d.nProt||''}";"${d.dhRecbto||''}";"${d.cStat||''}";"${d.xMotivo||''}";"${d.emitente||''}";"${d.cnpjEmit||''}";"${d.ufOrigem||''}";"${d.destinatario||''}";"${d.cnpjDest||''}";"${d.ufDestino||''}";${fmtCsv(d.vNF)};${fmtCsv(d.vBC)};${fmtCsv(d.vICMS)};${fmtCsv(d.vBCST)};${fmtCsv(d.vST)};${fmtCsv(d.vProd)};${fmtCsv(d.vFrete)};${fmtCsv(d.vSeg)};${fmtCsv(d.vDesc)};${fmtCsv(d.vIPI)};${fmtCsv(d.vPIS)};${fmtCsv(d.vCOFINS)}\n`;
             });
         } else {
-            csv = "Chave NF;Numero NF;Num Item;Cod Prod;EAN;Descricao;NCM;CEST;CFOP;CST/CSOSN;Und;Qtd;Vlr Unit;Vlr Total Item;Vlr ICMS Item;Aliq ICMS;Vlr IPI Item;Pedido Compra;Item Pedido;Erro\n";
+            csv = "Chave NF;Num NF;Num Item;Cod Prod;EAN;Descricao;NCM;CEST;CFOP;CST/CSOSN;Und;Qtd;Vlr Unit;Vlr Total Item;Vlr ICMS;Aliq ICMS;Vlr IPI;Ped Compra;Item Ped;Erro\n";
             reportData.forEach(d => {
-                const status = d.valido ? "" : d.erro;
-                csv += `"${d.chave}";${d.nNF||''};${d.nItem||''};"${d.cProd||''}";"${d.cEAN||''}";"${d.xProd||''}";"${d.NCM||''}";"${d.CEST||''}";${d.CFOP||''};"${d.CST_CSOSN||''}";"${d.uCom||''}";${fmtCsv(d.qCom)};${fmtCsv(d.vUnCom)};${fmtCsv(d.vProd)};${fmtCsv(d.vICMSItem)};${fmtCsv(d.pICMS)};${fmtCsv(d.vIPIItem)};"${d.xPed||''}";"${d.nItemPed||''}";"${status}"\n`;
+                csv += `"${d.chave||''}";${d.nNF||''};${d.nItem||''};"${d.cProd||''}";"${d.cEAN||''}";"${d.xProd||''}";"${d.NCM||''}";"${d.CEST||''}";${d.CFOP||''};"${d.CST_CSOSN||''}";"${d.uCom||''}";${fmtCsv(d.qCom)};${fmtCsv(d.vUnCom)};${fmtCsv(d.vProd)};${fmtCsv(d.vICMSItem)};${fmtCsv(d.pICMS)};${fmtCsv(d.vIPIItem)};"${d.xPed||''}";"${d.nItemPed||''}";"${d.erro||''}"\n`;
             });
         }
         if (typeof baixarArquivo === 'function') {
             baixarArquivo(csv, `relatorio_${currentReportType}_${new Date().getTime()}.csv`, 'text/csv;charset=utf-8;');
-        } else { alert("Função de download não disponível. Verifique utils.js"); }
+        } else { alert("Função de download não disponível."); }
     }
 });
