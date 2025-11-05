@@ -985,3 +985,39 @@ input[type="text"]:focus, select:focus {
     background-color: #d97706;
     color: white;
 }
+.brand-container {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Espaço entre o ícone e o texto */
+    margin-bottom: 0.25rem;
+}
+
+.app-logo {
+    height: 42px; /* Ajuste a altura conforme necessário */
+    width: auto;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); /* Sombra suave para destaque */
+}
+
+.brand-name {
+    font-size: 2rem !important; /* Ligeiramente maior que o anterior */
+    font-weight: 800 !important;
+    letter-spacing: -0.5px;
+    margin: 0 !important;
+    
+    /* Gradiente baseado nas cores do logo (Ciano para Azul Escuro) */
+    background: linear-gradient(135deg, #0ea5e9 0%, #1e40af 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+}
+
+/* Ajuste responsivo para telas menores */
+@media (max-width: 768px) {
+    .app-logo {
+        height: 36px;
+    }
+    .brand-name {
+        font-size: 1.75rem !important;
+    }
+}
