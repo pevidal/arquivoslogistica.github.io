@@ -17,11 +17,10 @@
             
             <nav class="tab-navigation">
                 <button class="tab-button active" data-tab="zpl-viewer">📄 Visualizador ZPL</button>
-                <button class="tab-button" data-tab="nfe-zpl">📦 Gerar ZPL</button>
+                <button class="tab-button" data-tab="nfe-zpl">📦 Danfe Simplificado em ZPL</button>
                 <button class="tab-button" data-tab="reports-advanced">📊 Relatórios de Notas fiscais</button>
-                <button class="tab-button" data-tab="barcode-generator">Gerador de Código Barras</button>
-                <button class="tab-button" data-tab="proceda">🔧 PROCEDA</button>
-                <button class="tab-button" data-tab="nfe-batch-validator">📑 Validador de Chave Nfe (Lote)</button>
+                <button class="tab-button" data-tab="barcode-generator">🔨 Gerador de Código Barras</button>
+                <button class="tab-button" data-tab="proceda">🔧 Validador de PROCEDA</button>
             </nav>
         </div>
     </header>
@@ -75,11 +74,29 @@
             <h2 style="margin-bottom: 2rem; font-size: 2rem;">Relatórios de NFe/CTe</h2>
             
             <div class="zpl-viewer-layout"> <div class="editor-column">
+                    <h3>🛠️ Configuração do Relatório</h3>
+                    
+                    <div style="margin-bottom: 1.5rem; padding: 1rem; background: var(--color-bg-secondary); border-radius: 8px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Tipo de Relatório:</label>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <label style="cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="radio" name="report-type" value="header" checked> 
+                                📋 Notas Fiscais (Cabeçalho)
+                            </label>
+                            <label style="cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="radio" name="report-type" value="items"> 
+                                📦 Itens das Notas (Produtos)
+                            </label>
+                        </div>
+                    </div>
+
                     <h3>📥 Origem dos Dados</h3>
                     
                     <div style="margin-bottom: 1.5rem;">
-                        <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Opção A: Colar Chaves de Acesso</label>
-                        <textarea id="report-text-input" placeholder="Cole uma chave por linha aqui..." style="min-height: 150px;"></textarea>
+                         <div id="text-input-container">
+                            <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Opção A: Colar Chaves de Acesso</label>
+                            <textarea id="report-text-input" placeholder="Cole uma chave por linha aqui..." style="min-height: 100px;"></textarea>
+                        </div>
                     </div>
                     
                     <div style="margin-bottom: 1.5rem;">
@@ -90,7 +107,7 @@
                         </p>
                     </div>
 
-                    <button id="report-process-button" class="button-primary" style="width: 100%;">🚀 Processar Tudo</button>
+                    <button id="report-process-button" class="button-primary" style="width: 100%;">🚀 Gerar Relatório</button>
                 </div>
 
                 <div class="viewer-column">
