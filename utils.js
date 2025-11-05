@@ -88,3 +88,14 @@ function formatarValorFixo(valor) {
     const num = valor.substring(0, len - 2) + "." + valor.substring(len - 2);
     return parseFloat(num) || 0.00;
 }
+
+//  Função genérica para ler XML (usada pelo ZPL e pelos Relatórios)
+function parseXML(xmlString) {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlString, "application/xml");
+    const erroNode = xmlDoc.querySelector("parsererror");
+    if (erroNode) {
+        throw new Error("Erro de análise XML");
+    }
+    return xmlDoc;
+}

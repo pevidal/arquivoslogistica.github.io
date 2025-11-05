@@ -2,15 +2,6 @@
 /* ARQUIVO ZPL / NFe (zpl-nfe.js)            */
 /* ================================================= */
 
-function parseXML(xmlString) {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlString, "application/xml");
-    const erroNode = xmlDoc.querySelector("parsererror");
-    if (erroNode) {
-        throw new Error("Erro de análise XML: " + erroNode.textContent);
-    }
-    return xmlDoc;
-}
 
 function gerarZPL(xmlDoc) {
     // Busca os dados no XML. Funções de formatação (formatarData, etc.) vêm do utils.js

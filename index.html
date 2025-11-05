@@ -18,11 +18,10 @@
             <nav class="tab-navigation">
                 <button class="tab-button active" data-tab="zpl-viewer">📄 Visualizador ZPL</button>
                 <button class="tab-button" data-tab="nfe-zpl">📦 Gerar ZPL</button>
-                <button class="tab-button" data-tab="dv-validator">✓ Validador</button>
-                <button class="tab-button" data-tab="barcode-generator"> Código Barras</button>
+                <button class="tab-button" data-tab="reports-advanced">📊 Relatórios de Notas fiscais</button>
+                <button class="tab-button" data-tab="barcode-generator">Gerador de Código Barras</button>
                 <button class="tab-button" data-tab="proceda">🔧 PROCEDA</button>
-                <button class="tab-button" data-tab="dv-validator">✓ Validador (Individual)</button>
-                <button class="tab-button" data-tab="nfe-batch-validator">📑 Validador em Lote</button>
+                <button class="tab-button" data-tab="nfe-batch-validator">📑 Validador de Chave Nfe (Lote)</button>
             </nav>
         </div>
     </header>
@@ -72,32 +71,78 @@
             </div>
         </section>
 
-        <section id="dv-validator" class="tab-content">
-            <h2 style="margin-bottom: 2rem; font-size: 2rem;">Validador de Dígito Verificador</h2>
-            <div class="tool-card">
-                <p style="color: var(--color-text-muted); margin-bottom: 1.5rem; font-size: 1.05rem;">Cole uma chave de NFe (44 dígitos) ou CT-e (44 dígitos) para validar se o Dígito Verificador (DV) está matematicamente correto usando o algoritmo Módulo 11.</p>
-                
-                <div class="form-group">
-                    <label for="dv-input">🔑 Chave de Acesso (44 dígitos):</label>
-                    <input type="text" id="dv-input" placeholder="Cole os 44 dígitos da chave aqui..." maxlength="44">
+       <section id="reports-advanced" class="tab-content">
+            <h2 style="margin-bottom: 2rem; font-size: 2rem;">Relatórios de NFe/CTe</h2>
+            
+            <div class="zpl-viewer-layout"> <div class="editor-column">
+                    <h3>📥 Origem dos Dados</h3>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Opção A: Colar Chaves de Acesso</label>
+                        <textarea id="report-text-input" placeholder="Cole uma chave por linha aqui..." style="min-height: 150px;"></textarea>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Opção B: Carregar Ficheiros XML</label>
+                        <input type="file" id="report-xml-input" class="input-file" multiple accept=".xml">
+                        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 0.5rem;">
+                            Pode selecionar múltiplos ficheiros de uma só vez.
+                        </p>
+                    </div>
+
+                    <button id="report-process-button" class="button-primary" style="width: 100%;">🚀 Processar Tudo</button>
                 </div>
-                <button id="dv-validate-button" class="button-primary">✓ Validar Chave</button>
-                
-                <div id="dv-result-box" class="result-box" style="display: none;"></div>
+
+                <div class="viewer-column">
+                     <h3>📈 Resumo do Processamento</h3>
+                     <div id="report-summary" style="display: none; text-align: center; padding-top: 2rem;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                             <div style="padding: 1rem; background: var(--color-success-bg); border-radius: 8px; color: #065f46;">
+                                 <div style="font-size: 0.9rem;">Válidos</div>
+                                 <div id="summary-valid" style="font-size: 2.5rem; font-weight: 700;">0</div>
+                             </div>
+                             <div style="padding: 1rem; background: var(--color-error-bg); border-radius: 8px; color: #991b1b;">
+                                 <div style="font-size: 0.9rem;">Inválidos/Erro</div>
+                                 <div id="summary-invalid" style="font-size: 2.5rem; font-weight: 700;">0</div>
+                             </div>
+                        </div>
+                        <div style="padding: 1rem; background: var(--color-bg-secondary); border-radius: 8px;">
+                            <div style="font-size: 0.9rem; color: var(--color-text-muted);">Valor Total Identificado</div>
+                            <div id="summary-total-value" style="font-size: 1.8rem; font-weight: 600; color: var(--color-primary);">R$ 0,00</div>
+                        </div>
+                     </div>
+                     <div id="report-loading" style="display: none; text-align: center; padding: 3rem; color: var(--color-text-muted);">
+                        ⏳ Processando ficheiros...
+                     </div>
+                </div>
+            </div>
+
+            <div class="tool-card" id="report-results-container" style="display: none; margin-top: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3>📊 Detalhamento dos Registros</h3>
+                    <div class="button-group" style="margin: 0;">
+                         <button id="report-clear-button" class="button-secondary">🗑️ Limpar</button>
+                         <button id="report-export-csv" class="button-secondary">📥 Exportar CSV</button>
+                    </div>
+                </div>
+                <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
+                    <table class="proceda-table" id="report-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Origem</th>
+                                <th>Chave de Acesso</th>
+                                <th>Data Emissão</th>
+                                <th>Emitente</th>
+                                <th>Destinatário</th>
+                                <th>Valor Total</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
-        <section id="nfe-batch-validator" class="tab-content">
-            <h2 style="margin-bottom: 2rem; font-size: 2rem;">Relatório e Validação em Lote (NFe/CTe)</h2>
-            <div class="tool-card">
-                <p style="color: var(--color-text-muted); margin-bottom: 1rem;">
-                    Cole uma lista de chaves de acesso (uma por linha) para validar e extrair informações.
-                </p>
-                <textarea id="batch-input" placeholder="Cole as chaves aqui...&#10;35230100000000000000550010000000011000000000&#10;41230100000000000000570010000000021000000000" style="min-height: 200px;"></textarea>
-                <div class="button-group">
-                    <button id="batch-validate-button" class="button-primary">🔍 Validar e Gerar Relatório</button>
-                    <button id="batch-clear-button" class="button-secondary">🗑️ Limpar</button>
-                </div>
-            </div>
 
             <div id="batch-results" style="display: none;">
                 
@@ -278,6 +323,8 @@
     <script src="edi-logic.js"></script>
 
     <script src="nfe-batch-validator.js"></script>
+
+    <script src="reports-logic.js"></script>
     
 </body>
 </html>
