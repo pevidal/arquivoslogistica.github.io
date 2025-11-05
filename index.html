@@ -21,7 +21,9 @@
                 <button class="tab-button" data-tab="dv-validator">✓ Validador</button>
                 <button class="tab-button" data-tab="barcode-generator"> Código Barras</button>
                 <button class="tab-button" data-tab="proceda">🔧 PROCEDA</button>
-                </nav>
+                <button class="tab-button" data-tab="dv-validator">✓ Validador (Individual)</button>
+                <button class="tab-button" data-tab="nfe-batch-validator">📑 Validador em Lote</button>
+            </nav>
         </div>
     </header>
 
@@ -84,7 +86,61 @@
                 <div id="dv-result-box" class="result-box" style="display: none;"></div>
             </div>
         </section>
-        
+        <section id="nfe-batch-validator" class="tab-content">
+            <h2 style="margin-bottom: 2rem; font-size: 2rem;">Relatório e Validação em Lote (NFe/CTe)</h2>
+            <div class="tool-card">
+                <p style="color: var(--color-text-muted); margin-bottom: 1rem;">
+                    Cole uma lista de chaves de acesso (uma por linha) para validar e extrair informações.
+                </p>
+                <textarea id="batch-input" placeholder="Cole as chaves aqui...&#10;35230100000000000000550010000000011000000000&#10;41230100000000000000570010000000021000000000" style="min-height: 200px;"></textarea>
+                <div class="button-group">
+                    <button id="batch-validate-button" class="button-primary">🔍 Validar e Gerar Relatório</button>
+                    <button id="batch-clear-button" class="button-secondary">🗑️ Limpar</button>
+                </div>
+            </div>
+
+            <div id="batch-results" style="display: none;">
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="tool-card" style="text-align: center; padding: 1.5rem;">
+                        <h3 style="justify-content: center; margin:0;">Total</h3>
+                        <p id="batch-total" style="font-size: 2.5rem; font-weight: 700; color: var(--color-primary);">0</p>
+                    </div>
+                    <div class="tool-card" style="text-align: center; padding: 1.5rem; background: var(--color-success-bg); border-color: var(--color-success);">
+                        <h3 style="justify-content: center; margin:0; color: #065f46;">Válidas</h3>
+                        <p id="batch-valid" style="font-size: 2.5rem; font-weight: 700; color: #059669;">0</p>
+                    </div>
+                    <div class="tool-card" style="text-align: center; padding: 1.5rem; background: var(--color-error-bg); border-color: var(--color-error);">
+                        <h3 style="justify-content: center; margin:0; color: #991b1b;">Inválidas</h3>
+                        <p id="batch-invalid" style="font-size: 2.5rem; font-weight: 700; color: #dc2626;">0</p>
+                    </div>
+                </div>
+
+                <div class="tool-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>📊 Detalhamento</h3>
+                        <button id="batch-export-csv" class="button-secondary">📥 Exportar CSV</button>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="proceda-table" id="batch-table">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Chave de Acesso</th>
+                                    <th>Modelo</th>
+                                    <th>Série</th>
+                                    <th>Número</th>
+                                    <th>Data (AA/MM)</th>
+                                    <th>UF</th>
+                                    <th>CNPJ Emitente</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
         <section id="barcode-generator" class="tab-content">
             <h2 style="margin-bottom: 2rem; font-size: 2rem;">Gerador de Código de Barras</h2>
             <div class="tool-card">
@@ -220,6 +276,8 @@
     <script src="edi-layouts.js"></script>
     
     <script src="edi-logic.js"></script>
+
+    <script src="nfe-batch-validator.js"></script>
     
 </body>
 </html>
