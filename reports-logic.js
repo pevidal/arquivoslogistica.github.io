@@ -395,15 +395,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // --- UTILITÁRIOS LOCAIS ---
-    function validarDV(chave) {
+function validarDV(chave) {
         if (!chave || chave.length !== 44) return false;
+        
         const chaveSemDV = chave.substring(0, 43);
         const dvInformado = parseInt(chave.substring(43, 44));
-        const pesos = "4329876543298765432987654329876543298765432";
+        
         let soma = 0;
-        for (let i = 0; i < 43; i++) { soma += parseInt(chave.charAt(i)) * parseInt(pesos.charAt(i)); }
+        let peso = 2;
+        
+        // Percorre a chave de trás para frente (da posição 42 até 0)
+        // Multiplicando pelos pesos de 2 a 9
+        for (let i = 42; i >= 0; i--) {
+            soma += parseInt(chaveSemDV.charAt(i)) * peso;
+            peso++;
+            if (peso > 9) peso = 2;
+        }
+        
         const resto = soma % 11;
-        return (resto === 0 || resto === 1) ? 0 : (11 - resto) === dvInformado;
+        const dvCalculado = (resto === 0 || resto === 1) ? 0 : (11 - resto);
+        
+        return dvCalculado === dvInformado;
     }
     function limitarTexto(t, s) { return (t && t.length > s) ? t.substring(0, s) + '...' : (t || '-'); }
     function fmtDec(val, casas) { return (val !== undefined && val !== null) ? val.toLocaleString('pt-BR', {minimumFractionDigits: casas, maximumFractionDigits: casas}) : '-'; }
