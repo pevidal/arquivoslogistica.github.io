@@ -54,13 +54,13 @@ body {
 }
 
 .header-content {
-    max-width: 1600px;
+    max-width: 95%; /* Usa quase toda a largura da tela */
     margin: 0 auto;
-    padding: 1.5rem 2rem;
+    padding: 1rem 1.5rem; /* Reduzi um pouco o padding vertical/horizontal */
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 2rem;
+    gap: 1rem; /* Reduzi o espaço entre o título e o menu */
     flex-wrap: wrap;
 }
 
@@ -102,6 +102,7 @@ body {
     color: var(--color-text-muted);
     transition: all 0.2s ease;
     box-shadow: var(--shadow-sm);
+    padding: 0.625rem 1rem; /* Reduzi o padding lateral de 1.25rem para 1rem */
 }
 
 .tab-button:hover {
@@ -901,8 +902,7 @@ input[type="text"]:focus, select:focus {
 
 .product-showcase {
     display: grid;
-    /* Cria colunas automáticas que têm no mínimo 300px de largura */
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: 2rem;
     padding: 1rem 0;
 }
@@ -927,12 +927,12 @@ input[type="text"]:focus, select:focus {
 }
 
 .product-image {
-    height: 220px;
-    background: #f9fafb;
+    height: 400px; /* Altura bem maior */
+    background: #ffffff; /* Mudei para branco para destacar melhor produtos que geralmente têm fundo branco */
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 1rem; /* Reduzi um pouco o padding para aproveitar o espaço */
     border-bottom: 1px solid var(--color-border);
 }
 

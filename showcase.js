@@ -75,14 +75,23 @@ document.addEventListener("DOMContentLoaded", () => {
     function atualizarCard(cardElement, dados, linkOriginal) {
         cardElement.classList.remove("loading-card");
         
-        // Tenta limpar um pouco o título do Mercado Livre que costuma ser muito longo
-        let tituloLimpo = dados.title.split('|')[0].trim(); // Pega só a primeira parte antes de um '|'
-        if (tituloLimpo.length > 60) tituloLimpo = tituloLimpo.substring(0, 60) + "...";
+        // Tenta limpar um pouco o título do Mercado Livre
+        let tituloLimpo = dados.title.split('|')[0].trim();
+        if (tituloLimpo.length > 80) tituloLimpo = tituloLimpo.substring(0, 80) + "...";
 
-        cardElement.querySelector('.product-image img').src = dados.image;
-        cardElement.querySelector('.product-image img').alt = tituloLimpo;
+        // Seleciona o elemento da imagem
+        const imgElement = cardElement.querySelector('.product-image img');
+        
+        // Atualiza os dados
+        imgElement.src = dados.image;
+        imgElement.alt = tituloLimpo;
+        
+        // --- CORREÇÃO AQUI ---
+        // Remove o estilo inline (width: 50px...) que estava a prender a imagem num tamanho pequeno
+        imgElement.removeAttribute("style"); 
+        // ---------------------
+
         cardElement.querySelector('.product-info h3').textContent = tituloLimpo;
-        // Usa a descrição ou um texto padrão
-        cardElement.querySelector('.product-info p').textContent = "Clique para ver o preço atual e mais detalhes.";
+        cardElement.querySelector('.product-info p').textContent = "Clique para ver detalhes e preço atual no Mercado Livre.";
     }
 });
