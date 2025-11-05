@@ -358,8 +358,10 @@ textarea:focus {
 }
 
 #label-image {
-    max-width: 100%;
-    height: auto;
+max-width: 100%;
+    max-height: 500px; /* Limita a altura máxima da imagem */
+    height: auto;      /* Mantém a proporção correta */
+    object-fit: contain; /* Garante que a imagem inteira é visível dentro da área */
     border-radius: 4px;
     box-shadow: var(--shadow-md);
 }

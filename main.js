@@ -5,6 +5,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    
     // --- LÓGICA DE CONTROLO DAS ABAS ---
     const tabButtons = document.querySelectorAll(".tab-button");
     const tabContents = document.querySelectorAll(".tab-content");
@@ -29,6 +30,68 @@ document.addEventListener("DOMContentLoaded", () => {
     const zplTextArea = document.getElementById("zpl-input");
     const renderButton = document.getElementById("render-button");
     const labelImage = document.getElementById("label-image");
+   // --- ZPL DE BOAS-VINDAS (Layout Profissional) ---
+    const WELCOME_ZPL = `^XA
+^PW812
+^LL1218
+^MZ1
+
+^FX --- BORDA GERAL ---
+^FO10,10^GB792,1198,4^FS
+
+^FX --- CABECALHO ---
+^FO20,30^A0N,50,50^FDARQUIVOS LOGISTICOS^FS
+^FO560,45^A0N,30,30^FDVersao 2.0^FS
+^FO10,100^GB792,4,4^FS
+
+^FX --- AREA DE DESTINATARIO (USUARIO) ---
+^FO30,130^A0N,25,25^FDESTINATARIO:^FS
+^FO30,160^A0N,50,50^FDUSUARIO NOVO^FS
+^FO30,220^A0N,30,30^FDBem-vindo a sua caixa de ferramentas!^FS
+^FO550,130^A0N,25,25^FDDATA DE HOJE:^FS
+^FO550,160^A0N,40,40^FD${new Date().toLocaleDateString('pt-BR')}^FS
+
+^FX --- DIVISORIA E ROTA ---
+^FO10,280^GB792,4,4^FS
+^FO30,300^A0N,25,25^FDROTA DE NECESSIDADE:^FS
+^FO20,340^A0N,80,80^FDZPL e NFe^FS
+
+^FX --- CAIXA DE CONTEUDO (FUNCIONALIDADES) ---
+^FO400,280^GB4,250,4^FS
+^FO420,300^A0N,25,25^FDCONTEUDO DO PACOTE:^FS
+^FO420,340^A0N,25,25^FD[x] Visualizador ZPL Real-time^FS
+^FO420,380^A0N,25,25^FD[x] Conversor NFe -> ZPL^FS
+^FO420,420^A0N,25,25^FD[x] Relatorios Avancados XML^FS
+^FO420,460^A0N,25,25^FD[x] Validador EDI PROCEDA^FS
+
+^FX --- CODIGO DE BARRAS PRINCIPAL ---
+^FO10,530^GB792,4,4^FS
+^FO30,560^A0N,25,25^FDTRACKING CODE (EXEMPLO):^FS
+^FO60,600^BY4,3,160^BCN,160,Y,N,N
+^FDART-LOG-TOOLS-2025^FS
+
+^FX --- AREA DE DESTAQUE (CALL TO ACTION) ---
+^FO10,850^GB792,250,792^FS
+^FO0,880^A0N,50,50^FB812,1,0,C,0^FR^FD>> DICA PRO: EQUIPAMENTOS <<^FS
+^FO0,950^A0N,35,35^FB812,1,0,C,0^FR^FDPrecisa de impressoras ou leitores?^FS
+^FO0,1000^A0N,40,40^FB812,1,0,C,0^FR^FDCLIQUE NA ABA [SUGESTOES] ACIMA!^FS
+
+^FX --- RODAPE ---
+^FO0,1140^A0N,25,25^FB812,1,0,C,0^FDDesenvolvido para facilitar sua operacao logistica^FS
+^XZ`;
+
+    // Se a área de texto estiver vazia ao carregar, insere o ZPL de boas-vindas
+    if (zplTextArea && zplTextArea.value.trim() === "") {
+        zplTextArea.value = WELCOME_ZPL;
+        
+        // Clica automaticamente no botão de renderizar para mostrar a etiqueta
+        if (renderButton) {
+            // Um pequeno atraso para garantir que tudo está pronto
+            setTimeout(() => {
+                renderButton.click();
+            }, 100);
+        }
+    }
 
     const LABELARY_API_URL = "https://api.labelary.com/v1/printers/8dpmm/labels/4x6/0/";
     let originalPlaceholder = "";
