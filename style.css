@@ -1,4 +1,8 @@
-/* --- :ROOT (Paleta Cinza Claro) --- */
+/* ================================================= */
+/* ESTILOS GERAIS (style.css)                */
+/* ================================================= */
+
+/* --- :ROOT (Paleta de Cores) --- */
 :root {
     --color-primary: #4b5563;
     --color-primary-hover: #374151;
@@ -28,7 +32,7 @@
     --font-code: "JetBrains Mono", "Fira Code", "Consolas", monospace;
 }
 
-/* Reset */
+/* Reset Básico */
 * {
     margin: 0;
     padding: 0;
@@ -43,103 +47,266 @@ body {
     min-height: 100vh;
 }
 
-/* Header e Navigation Combinados */
+/* ================================================= */
+/* HEADER & NAVEGAÇÃO (RESPONSIVO)           */
+/* ================================================= */
+
 .app-header {
-    background: var(--color-card-bg);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--color-border);
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
     box-shadow: var(--shadow-sm);
 }
 
 .header-content {
-    max-width: 95%; /* Usa quase toda a largura da tela */
+    max-width: 1600px;
     margin: 0 auto;
-    padding: 1rem 1.5rem; /* Reduzi um pouco o padding vertical/horizontal */
+    padding: 0.75rem 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem; /* Reduzi o espaço entre o título e o menu */
-    flex-wrap: wrap;
 }
 
-.header-info {
-    flex-shrink: 0;
+/* Marca e Logo */
+.header-brand {
+    display: flex;
+    flex-direction: column;
 }
 
-.app-header h1 {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--color-text);
-    margin-bottom: 0.25rem;
+.brand-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.app-header p {
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
+.app-logo {
+    height: 32px;
+    width: auto;
+}
+
+.brand-name {
+    font-size: 1.5rem;
+    font-weight: 800;
     margin: 0;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #0ea5e9 0%, #1e40af 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-/* Navigation */
+.brand-tagline {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    line-height: 1;
+}
+
+/* Botão Hambúrguer (Apenas Mobile) */
+#mobile-menu-toggle {
+    display: none; /* Escondido por padrão no desktop */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.hamburger-line {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: var(--color-text);
+    transition: all 0.3s ease;
+}
+
+/* Navegação Desktop */
 .tab-navigation {
     display: flex;
     gap: 0.5rem;
-    flex-wrap: wrap;
-    flex: 1;
-    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Elementos apenas do Mobile (escondidos no desktop) */
+.mobile-nav-header, .nav-overlay {
+    display: none;
 }
 
 .tab-button {
     font-family: var(--font-main);
     font-size: 0.9rem;
-    font-weight: 600;
-    padding: 0.625rem 1.25rem;
-    border: 1px solid var(--color-border);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border: 1px solid transparent;
     border-radius: 8px;
-    background: var(--color-card-bg);
-    cursor: pointer;
+    background: transparent;
     color: var(--color-text-muted);
+    cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: var(--shadow-sm);
-    padding: 0.625rem 1rem; /* Reduzi o padding lateral de 1.25rem para 1rem */
 }
 
 .tab-button:hover {
     color: var(--color-text);
     background: var(--color-bg-secondary);
-    border-color: var(--color-primary);
 }
 
 .tab-button.active {
-    color: white;
     background: var(--color-primary);
-    border-color: var(--color-primary);
-    box-shadow: var(--shadow-md);
+    color: white;
+    box-shadow: var(--shadow-sm);
 }
 
-@media (max-width: 768px) {
-    .header-content {
-        flex-direction: column;
-        align-items: flex-start;
+/* Botão de Destaque (Sugestões) */
+.tab-button.featured {
+    color: #d97706;
+    border-color: #fcd34d;
+    background: #fffbeb;
+    margin-left: 0.5rem;
+}
+
+.tab-button.featured:hover {
+    background: #fef3c7;
+}
+
+.tab-button.featured.active {
+    background: #d97706;
+    color: white;
+    border-color: #d97706;
+}
+
+/* --- MEDIA QUERY: ESTILOS MOBILE (max-width: 1024px) --- */
+@media (max-width: 1024px) {
+    #mobile-menu-toggle {
+        display: flex; /* Mostra o botão hambúrguer */
     }
-    
+
+    .brand-tagline {
+        display: none; /* Esconde tagline em telas pequenas para economizar espaço */
+    }
+
+    /* Menu Lateral (Gaveta Off-Canvas) */
     .tab-navigation {
-        justify-content: flex-start;
+        position: fixed;
+        top: 0;
+        right: -280px; /* Começa escondido fora da tela */
+        width: 280px;
+        height: 100vh;
+        background: var(--color-card-bg);
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0;
+        gap: 0;
+        box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+        transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1002;
+        overflow-y: auto;
+    }
+
+    .tab-navigation.nav-open {
+        right: 0; /* Desliza para dentro da tela */
+    }
+
+    .mobile-nav-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--color-border);
+        margin-bottom: 0.5rem;
+        background: var(--color-bg-secondary);
+    }
+
+    .mobile-nav-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--color-primary);
+    }
+
+    #close-menu-button {
+        background: none;
+        border: none;
+        font-size: 2rem;
+        line-height: 1;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        padding: 0 0.5rem;
+    }
+
+    /* Estilo dos botões dentro do menu mobile */
+    .tab-button {
+        border-radius: 0;
+        border: none;
+        padding: 1rem 1.5rem;
+        text-align: left;
+        font-size: 1rem;
+        border-left: 4px solid transparent;
+    }
+
+    .tab-button:hover {
+        background: var(--color-bg-secondary);
+    }
+
+    .tab-button.active {
+        background: var(--color-primary-light);
+        color: var(--color-primary);
+        border-left-color: var(--color-primary);
+        font-weight: 700;
+        box-shadow: none;
+    }
+
+    .tab-button.featured {
+        margin-top: auto; /* Empurra para o final do menu */
+        margin-left: 0;
+        border-top: 1px solid var(--color-border);
+        background: #fffbeb;
+    }
+
+    /* Overlay Escuro de Fundo */
+    .nav-overlay {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 1001;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+
+    .nav-overlay.nav-open {
+        opacity: 1;
+        visibility: visible;
     }
 }
 
-/* Container */
+/* ================================================= */
+/* LAYOUT PRINCIPAL & COMPONENTES            */
+/* ================================================= */
+
 .app-container {
     padding: 2rem;
     max-width: 1600px;
     margin: 0 auto;
 }
 
+@media (max-width: 768px) {
+    .app-container {
+        padding: 1rem;
+    }
+}
+
 .tab-content {
     display: none;
-    animation: fadeIn 0.4s ease-in-out;
+    animation: fadeIn 0.3s ease-in-out;
 }
 
 .tab-content.active {
@@ -151,7 +318,7 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Cards */
+/* Cards de Ferramentas */
 .tool-card {
     background: var(--color-card-bg);
     border: 1px solid var(--color-border);
@@ -182,14 +349,14 @@ body {
     color: var(--color-secondary);
 }
 
-/* ZPL Viewer Layout */
+/* Layout do Visualizador ZPL */
 .zpl-viewer-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1024px) {
     .zpl-viewer-layout {
         grid-template-columns: 1fr;
     }
@@ -212,17 +379,7 @@ body {
     gap: 0.75rem;
 }
 
-.editor-column h2::before {
-    content: '⚡';
-    font-size: 1.8rem;
-}
-
-.viewer-column h2::before {
-    content: '👁️';
-    font-size: 1.8rem;
-}
-
-/* Textarea */
+/* Inputs e Textareas */
 textarea {
     width: 100%;
     min-height: 400px;
@@ -243,15 +400,47 @@ textarea:focus {
     box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.1);
 }
 
-#zpl-input {
-    min-height: 500px;
+#zpl-input { min-height: 500px; }
+#nfe-zpl-output { background: var(--color-bg-secondary); }
+
+input[type="text"], 
+input[type="number"],
+select {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    font-family: var(--font-main);
+    font-size: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-card-bg);
+    color: var(--color-text);
+    transition: all 0.2s ease;
 }
 
-#nfe-zpl-output {
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.1);
+}
+
+.input-file {
+    width: 100%;
+    padding: 2rem;
+    text-align: center;
+    border: 2px dashed var(--color-border);
+    border-radius: 12px;
     background: var(--color-bg-secondary);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-/* Buttons */
+.input-file:hover {
+    border-color: var(--color-primary);
+    background: #f0fdfa; /* Cor de fundo leve ao passar o mouse */
+}
+
+/* Botões */
 .button-primary, .button-secondary {
     font-family: var(--font-main);
     font-size: 1rem;
@@ -261,48 +450,25 @@ textarea:focus {
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: var(--shadow-sm);
-    position: relative;
-    overflow: hidden;
-}
-
-.button-primary::before, .button-secondary::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.5s, height 0.5s;
-}
-
-.button-primary:hover::before, .button-secondary:hover::before {
-    width: 300px;
-    height: 300px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
 .button-primary {
     background: var(--color-primary);
     color: white;
+    box-shadow: var(--shadow-sm);
 }
 
 .button-primary:hover {
     background: var(--color-primary-hover);
+    transform: translateY(-1px);
     box-shadow: var(--shadow-md);
 }
 
-.button-primary:active {
-    transform: scale(0.98);
-}
-
-.button-primary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-}
+.button-primary:active { transform: translateY(0); }
 
 .button-secondary {
     background: var(--color-card-bg);
@@ -312,13 +478,13 @@ textarea:focus {
 
 .button-secondary:hover {
     background: var(--color-bg-secondary);
+    border-color: var(--color-primary);
 }
 
-#render-button {
-    width: 100%;
-    margin-top: 1rem;
-    font-size: 1.1rem;
-    padding: 1rem;
+.button-primary:disabled, .button-secondary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
 }
 
 .button-group {
@@ -328,24 +494,9 @@ textarea:focus {
     flex-wrap: wrap;
 }
 
-/* Input File */
-.input-file {
-    width: 100%;
-    padding: 1rem;
-    border: 2px dashed var(--color-border);
-    border-radius: 8px;
-    background: var(--color-bg-secondary);
-    color: var(--color-text-muted);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
+#render-button { width: 100%; margin-top: 1rem; }
 
-.input-file:hover {
-    border-color: var(--color-primary);
-    background: var(--color-card-bg);
-}
-
-/* Image Container */
+/* Container de Imagem (ZPL) */
 .image-container {
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
@@ -358,195 +509,115 @@ textarea:focus {
 }
 
 #label-image {
-max-width: 100%;
-    max-height: 500px; /* Limita a altura máxima da imagem */
-    height: auto;      /* Mantém a proporção correta */
-    object-fit: contain; /* Garante que a imagem inteira é visível dentro da área */
-    border-radius: 4px;
+    max-width: 100%;
+    max-height: 600px;
+    height: auto;
+    object-fit: contain;
     box-shadow: var(--shadow-md);
+    background: white;
 }
 
-/* Form Groups */
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
+/* Utilitários e Pequenos Componentes */
+.form-group { margin-bottom: 1.5rem; }
 .form-group label {
     display: block;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    color: var(--color-text);
-    font-size: 0.95rem;
 }
 
-input[type="text"], select {
-    width: 100%;
-    padding: 0.875rem 1rem;
-    font-family: var(--font-main);
-    font-size: 1rem;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    background: var(--color-card-bg);
-    color: var(--color-text);
-    transition: all 0.2s ease;
-}
-
-input[type="text"]:focus, select:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.1);
-}
-
-#dv-input {
-    font-family: var(--font-code);
-    font-size: 1.1rem;
-    letter-spacing: 0.05em;
-}
-
-/* Result Box */
 .result-box {
     padding: 1.5rem;
     margin-top: 1.5rem;
     border-radius: 12px;
-    font-size: 1.1rem;
     font-weight: 600;
     text-align: center;
-    border: 2px solid transparent;
     animation: slideIn 0.4s ease;
 }
-
 @keyframes slideIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
 .result-box.valid {
     background: var(--color-success-bg);
-    color: #047857;
-    border-color: var(--color-success);
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15);
+    color: #065f46; border: 1px solid var(--color-success);
 }
-
 .result-box.invalid {
     background: var(--color-error-bg);
-    color: #dc2626;
-    border-color: var(--color-error);
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15);
+    color: #991b1b; border: 1px solid var(--color-error);
 }
 
-/* Barcode Container */
 .barcode-container {
-    text-align: center;
     padding: 3rem;
     margin-top: 1.5rem;
-    background: var(--color-bg-secondary);
-    border: 2px dashed var(--color-border);
-    border-radius: 8px;
-    min-height: 200px;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
     display: flex;
-    align-items: center;
     justify-content: center;
 }
 
-#barcode-output {
-    max-width: 100%;
-    height: auto;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-}
+.loading { animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-/* Loading State */
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
+/* Scrollbar Personalizada */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-secondary); }
 
-.loading {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
+/* ================================================= */
+/* TABELAS (PROCEDA & RELATÓRIOS)            */
+/* ================================================= */
 
-/* Scrollbar */
-::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--color-bg-secondary);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--color-border);
-    border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--color-primary);
-}
-
-/* Tabelas PROCEDA */
 .proceda-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate; /* Permite border-radius */
+    border-spacing: 0;
     margin-bottom: 2rem;
     font-size: 0.9rem;
     background: var(--color-card-bg);
     box-shadow: var(--shadow-sm);
     border-radius: 8px;
     overflow: hidden;
-}
-
-.proceda-table thead {
-    background: var(--color-primary);
-    color: white;
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    border: 1px solid var(--color-border);
 }
 
 .proceda-table th {
-    padding: 0.875rem;
-    text-align: left;
-    font-weight: 600;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.proceda-table tbody tr {
-    border-bottom: 1px solid var(--color-border);
-    transition: background-color 0.2s ease;
-}
-
-.proceda-table tbody tr:hover {
     background: var(--color-bg-secondary);
-}
-
-.proceda-table tbody tr:last-child {
-    border-bottom: none;
+    color: var(--color-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 2px solid var(--color-border);
+    white-space: nowrap;
 }
 
 .proceda-table td {
-    padding: 0.75rem 0.875rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
     color: var(--color-text);
+    vertical-align: middle;
 }
 
-.proceda-table .segment-header {
-    background: var(--color-bg-secondary);
-    font-weight: 600;
-    color: var(--color-primary);
-}
+.proceda-table tr:last-child td { border-bottom: none; }
+.proceda-table tbody tr:hover { background-color: #f9fafb; }
 
 .segment-badge {
     display: inline-block;
-    padding: 0.25rem 0.75rem;
+    padding: 0.25rem 0.5rem;
     background: var(--color-primary-light);
     color: var(--color-primary);
-    border-radius: 12px;
+    border-radius: 6px;
     font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}/* ================================================= */
-/* ESTILOS PARA O MODAL DE CONFIGURAÇÕES EDI (POPUP) */
+    font-weight: 700;
+    font-family: var(--font-code);
+}
+
+/* ================================================= */
+/* MODAIS (POPUP)                    */
 /* ================================================= */
 
 .modal-backdrop {
@@ -555,34 +626,34 @@ input[type="text"]:focus, select:focus {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    z-index: 1000;
-    display: flex; /* Usado para centralizar o conteúdo */
+    background-color: rgba(0, 0, 0, 0.75);
+    z-index: 2000;
+    display: flex;
     align-items: center;
     justify-content: center;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease-in-out;
+    transition: opacity 0.3s ease;
 }
 
-/* JS vai mudar display: flex, então podemos animar a opacidade */
 .modal-backdrop[style*="display: flex"] {
     opacity: 1;
     pointer-events: all;
 }
 
 .modal-content {
-    background: var(--color-bg-primary);
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     width: 90%;
-    max-width: 800px;
-    max-height: 90vh;
+    max-width: 850px;
+    max-height: 85vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Para o scroll do modal-body funcionar */
     transform: scale(0.95);
-    transition: transform 0.2s ease-in-out;
+    transition: transform 0.3s ease;
 }
 
 .modal-backdrop[style*="display: flex"] .modal-content {
@@ -593,318 +664,87 @@ input[type="text"]:focus, select:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.25rem 1.5rem;
+    padding: 1.5rem;
     border-bottom: 1px solid var(--color-border);
 }
 
-.modal-header h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: var(--color-text-primary);
-}
+.modal-header h2 { font-size: 1.5rem; margin: 0; }
 
 .modal-close-button {
+    background: transparent;
+    border: none;
     font-size: 2rem;
     line-height: 1;
-    background: none;
-    border: none;
     color: var(--color-text-muted);
     cursor: pointer;
-    padding: 0 0.5rem;
     transition: color 0.2s;
 }
-.modal-close-button:hover {
-    color: var(--color-text-primary);
-}
+.modal-close-button:hover { color: var(--color-error); }
 
 .modal-body {
     padding: 1.5rem;
-    overflow-y: auto; /* Permite scroll se o conteúdo for grande */
+    overflow-y: auto;
+    background-color: #fafafa;
 }
 
-
-/* ================================================= */
-/* ESTILOS PARA OS FORMULÁRIOS DENTRO DO MODAL       */
-/* ================================================= */
-
+/* Componentes dentro do Modal EDI */
 .edi-settings-tabs {
     display: flex;
     flex-wrap: wrap;
-    border-bottom: 2px solid var(--color-border);
+    background: white;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid var(--color-border);
+    border-bottom: 2px solid var(--color-primary-light);
 }
 
 .edi-settings-tab-button {
-    padding: 0.75rem 1.25rem;
-    cursor: pointer;
+    padding: 1rem 1.5rem;
     background: none;
     border: none;
+    cursor: pointer;
+    font-weight: 600;
     color: var(--color-text-muted);
-    font-size: 1rem;
-    font-weight: 500;
     border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
     transition: all 0.2s;
 }
 
-.edi-settings-tab-button:hover {
-    color: var(--color-text-primary);
-}
-
+.edi-settings-tab-button:hover { color: var(--color-primary); }
 .edi-settings-tab-button.active {
     color: var(--color-primary);
     border-bottom-color: var(--color-primary);
 }
 
 .edi-settings-form-content {
-    padding-top: 1rem;
-}
-
-.edi-register-group {
-    margin-bottom: 2rem;
-    padding: 1rem;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    background: var(--color-bg-secondary);
-}
-.edi-register-group h4 {
-    margin-top: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.edi-settings-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.edi-settings-table th,
-.edi-settings-table td {
-    padding: 0.5rem;
-    text-align: left;
-    border-bottom: 1px solid var(--color-border);
-}
-
-.edi-settings-table th {
-    font-size: 0.85rem;
-    color: var(--color-text-muted);
-}
-
-.edi-settings-table td:nth-child(1) { /* Nome do Campo */
-    width: 60%;
-    font-weight: 500;
-}
-.edi-settings-table td:nth-child(2),
-.edi-settings-table td:nth-child(3) { /* Pos e Tam */
-    width: 20%;
-}
-
-.input-sm {
-    width: 80px;
-    padding: 0.35rem 0.5rem;
-    font-size: 0.9rem;
-    border-radius: 6px;
-    border: 1px solid var(--color-border);
-    background: var(--color-bg-primary);
-    color: var(--color-text-primary);
-}
-.input-sm:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px var(--color-primary-light);
-}
-/* ... (todo o seu CSS anterior) ... */
-
-/* ================================================= */
-/* ESTILOS PARA O MODAL DE CONFIGURAÇÕES EDI (POPUP) */
-/* ================================================= */
-
-/* ================================================= */
-/* ESTILOS PARA O MODAL DE CONFIGURAÇÕES EDI (POPUP) */
-/* ================================================= */
-
-.modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* MUDANÇA: Aumentei a opacidade de 0.6 para 0.75 para escurecer o fundo */
-    background-color: rgba(0, 0, 0, 0.75); 
-    z-index: 1000;
-    display: flex; 
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease-in-out;
-    
-    /* Fundo desfocado (vidro fosco) */
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px); 
-}
-
-/* JS vai mudar display: flex, então podemos animar a opacidade */
-.modal-backdrop[style*="display: flex"] {
-    opacity: 1;
-    pointer-events: all;
-}
-
-.modal-content {
-    /* MUDANÇA: Adicionei um fundo branco explícito */
-    background-color: #ffffff; 
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 800px;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; 
-    transform: scale(0.95);
-    transition: transform 0.2s ease-in-out;
-}
-
-.modal-backdrop[style*="display: flex"] .modal-content {
-    transform: scale(1);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid #e5e7eb; /* Cor explícita */
-}
-
-.modal-header h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: #111827; /* Cor explícita */
-}
-
-.modal-close-button {
-    font-size: 2rem;
-    line-height: 1;
-    background: none;
-    border: none;
-    color: #9ca3af; /* Cor explícita */
-    cursor: pointer;
-    padding: 0 0.5rem;
-    transition: color 0.2s;
-}
-.modal-close-button:hover {
-    color: #111827; /* Cor explícita */
-}
-
-.modal-body {
+    background: white;
     padding: 1.5rem;
-    overflow-y: auto; 
-    /* Cor de fundo para o corpo do modal */
-    background-color: #f9fafb; 
-}
-
-
-/* ================================================= */
-/* ESTILOS PARA OS FORMULÁRIOS DENTRO DO MODAL       */
-/* ================================================= */
-
-.edi-settings-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    border-bottom: 2px solid #e5e7eb; /* Cor explícita */
-    background-color: #ffffff;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-}
-
-.edi-settings-tab-button {
-    padding: 0.75rem 1.25rem;
-    cursor: pointer;
-    background: none;
-    border: none;
-    color: #6b7280; /* Cor explícita */
-    font-size: 1rem;
-    font-weight: 500;
-    border-bottom: 3px solid transparent;
-    transition: all 0.2s;
-}
-
-.edi-settings-tab-button:hover {
-    color: #111827; /* Cor explícita */
-}
-
-.edi-settings-tab-button.active {
-    color: #4f46e5; /* Cor primária (exemplo) */
-    border-bottom-color: #4f46e5; /* Cor primária (exemplo) */
-}
-
-.edi-settings-form-content {
-    padding-top: 1rem;
+    border: 1px solid var(--color-border);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
 }
 
 .edi-register-group {
-    margin-bottom: 2rem;
-    padding: 1rem;
-    border: 1px solid #e5e7eb; /* Cor explícita */
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    background: #ffffff; /* Cor explícita */
-}
-.edi-register-group h4 {
-    margin-top: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.edi-settings-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.edi-settings-table th,
-.edi-settings-table td {
-    padding: 0.5rem;
-    text-align: left;
-    border-bottom: 1px solid #e5e7eb; /* Cor explícita */
-}
-
-.edi-settings-table th {
-    font-size: 0.85rem;
-    color: #6b7280; /* Cor explícita */
-}
-
-.edi-settings-table td:nth-child(1) { /* Nome do Campo */
-    width: 60%;
-    font-weight: 500;
-}
-.edi-settings-table td:nth-child(2),
-.edi-settings-table td:nth-child(3) { /* Pos e Tam */
-    width: 20%;
+    padding: 1rem;
+    margin-top: 1rem;
 }
 
 .input-sm {
+    padding: 0.4rem 0.5rem;
     width: 80px;
-    padding: 0.35rem 0.5rem;
-    font-size: 0.9rem;
     border-radius: 6px;
-    border: 1px solid #d1d5db; /* Cor explícita */
-    background: #ffffff; /* Cor explícita */
-    color: #111827; /* Cor explícita */
+    border: 1px solid var(--color-border);
 }
-.input-sm:focus {
-    outline: none;
-    border-color: #4f46e5; /* Cor primária (exemplo) */
-    box-shadow: 0 0 0 2px #c7d2fe; /* Cor primária clara (exemplo) */
-}
-/* ... (o resto do seu CSS para .modal-content, .modal-header, etc. continua igual) ... */
 
 /* ================================================= */
-/* ESTILOS DA VITRINE DE PRODUTOS                    */
+/* VITRINE DE PRODUTOS (SUGESTÕES)           */
 /* ================================================= */
 
 .product-showcase {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
     padding: 1rem 0;
 }
@@ -914,27 +754,26 @@ input[type="text"]:focus, select:focus {
     border: 1px solid var(--color-border);
     border-radius: 16px;
     overflow: hidden;
-    text-decoration: none; /* Remove o sublinhado padrão dos links */
+    text-decoration: none;
     color: var(--color-text);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
 }
 
-/* Efeito ao passar o mouse: sobe um pouco e ganha sombra */
 .product-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    border-color: #d97706; /* Cor de destaque laranja/amarelo */
+    box-shadow: var(--shadow-lg);
+    border-color: #d97706;
 }
 
 .product-image {
-    height: 400px; /* Altura bem maior */
-    background: #ffffff; /* Mudei para branco para destacar melhor produtos que geralmente têm fundo branco */
+    height: 250px;
+    padding: 2rem;
+    background: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem; /* Reduzi um pouco o padding para aproveitar o espaço */
     border-bottom: 1px solid var(--color-border);
 }
 
@@ -945,9 +784,7 @@ input[type="text"]:focus, select:focus {
     transition: transform 0.3s ease;
 }
 
-.product-card:hover .product-image img {
-    transform: scale(1.05); /* Ligeiro zoom na imagem ao passar o mouse */
-}
+.product-card:hover .product-image img { transform: scale(1.05); }
 
 .product-info {
     padding: 1.5rem;
@@ -957,67 +794,29 @@ input[type="text"]:focus, select:focus {
 }
 
 .product-info h3 {
-    font-size: 1.25rem;
-    margin-bottom: 0.75rem;
-    color: var(--color-text);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
     line-height: 1.4;
 }
 
 .product-info p {
+    font-size: 0.9rem;
     color: var(--color-text-muted);
-    font-size: 0.95rem;
+    flex-grow: 1;
     margin-bottom: 1.5rem;
-    flex: 1;
 }
 
 .cta-button {
-    display: inline-block;
-    padding: 0.75rem 1rem;
-    background-color: var(--color-bg-secondary);
-    color: var(--color-primary);
     text-align: center;
+    padding: 0.75rem;
+    background: var(--color-bg-secondary);
+    color: var(--color-primary);
     border-radius: 8px;
     font-weight: 600;
     transition: all 0.2s;
 }
 
 .product-card:hover .cta-button {
-    background-color: #d97706;
+    background: #d97706;
     color: white;
-}
-.brand-container {
-    display: flex;
-    align-items: center;
-    gap: 12px; /* Espaço entre o ícone e o texto */
-    margin-bottom: 0.25rem;
-}
-
-.app-logo {
-    height: 42px; /* Ajuste a altura conforme necessário */
-    width: auto;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); /* Sombra suave para destaque */
-}
-
-.brand-name {
-    font-size: 2rem !important; /* Ligeiramente maior que o anterior */
-    font-weight: 800 !important;
-    letter-spacing: -0.5px;
-    margin: 0 !important;
-    
-    /* Gradiente baseado nas cores do logo (Ciano para Azul Escuro) */
-    background: linear-gradient(135deg, #0ea5e9 0%, #1e40af 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-}
-
-/* Ajuste responsivo para telas menores */
-@media (max-width: 768px) {
-    .app-logo {
-        height: 36px;
-    }
-    .brand-name {
-        font-size: 1.75rem !important;
-    }
 }

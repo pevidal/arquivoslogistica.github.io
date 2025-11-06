@@ -11,21 +11,33 @@
 
     <header class="app-header">
         <div class="header-content">
-        <div class="header-info">
+            <div class="header-brand">
                 <div class="brand-container">
                     <h1 class="brand-name">FaciLog</h1>
                 </div>
-                <p>Ferramentas para NFe, ZPL e PROCEDA</p>
+                <p class="brand-tagline">Ferramentas Logísticas</p>
             </div>
             
-            <nav class="tab-navigation">
+            <button id="mobile-menu-toggle" aria-label="Abrir menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
+            <nav class="tab-navigation" id="main-nav">
+                <div class="mobile-nav-header">
+                    <span class="mobile-nav-title">Menu</span>
+                    <button id="close-menu-button" aria-label="Fechar menu">&times;</button>
+                </div>
                 <button class="tab-button active" data-tab="zpl-viewer">📄 Visualizador ZPL</button>
-                <button class="tab-button" data-tab="nfe-zpl">📦 Danfe Simplificado em ZPL</button>
-                <button class="tab-button" data-tab="reports-advanced">📊 Relatórios de Notas fiscais</button>
-                <button class="tab-button" data-tab="barcode-generator">🔨 Gerador de Código Barras</button>
-                <button class="tab-button" data-tab="proceda">🔧 Validador de PROCEDA</button>
-                <button class="tab-button" data-tab="featured-products" style="color: #d97706; border-color: #d97706;">⭐ Sugestões</button>
+                <button class="tab-button" data-tab="nfe-zpl">📦 NFe para ZPL</button>
+                <button class="tab-button" data-tab="reports-advanced">📊 Relatórios XML</button>
+                <button class="tab-button" data-tab="barcode-generator">🔨 Cód. Barras</button>
+                <button class="tab-button" data-tab="proceda">🔧 Validador EDI</button>
+                <button class="tab-button featured" data-tab="featured-products">⭐ Sugestões</button>
             </nav>
+
+            <div class="nav-overlay" id="nav-overlay"></div>
         </div>
     </header>
 

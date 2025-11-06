@@ -4,7 +4,28 @@
 /* ================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+// --- NOVA LÓGICA DO MENU MOBILE ---
+    const mobileMenuToggle = document.getElementById("mobile-menu-toggle");
+    const mainNav = document.getElementById("main-nav");
+    const navOverlay = document.getElementById("nav-overlay");
+    const closeMenuButton = document.getElementById("close-menu-button");
 
+    function toggleMenu() {
+        const isOpen = mainNav.classList.contains("nav-open");
+        if (isOpen) {
+            mainNav.classList.remove("nav-open");
+            navOverlay.classList.remove("nav-open");
+            document.body.style.overflow = ""; // Restaura o scroll da página
+        } else {
+            mainNav.classList.add("nav-open");
+            navOverlay.classList.add("nav-open");
+            document.body.style.overflow = "hidden"; // Impede scroll da página com menu aberto
+        }
+    }
+
+    if (mobileMenuToggle) mobileMenuToggle.addEventListener("click", toggleMenu);
+    if (closeMenuButton) closeMenuButton.addEventListener("click", toggleMenu);
+    if (navOverlay) navOverlay.addEventListener("click", toggleMenu);
     
     // --- LÓGICA DE CONTROLO DAS ABAS ---
     const tabButtons = document.querySelectorAll(".tab-button");
