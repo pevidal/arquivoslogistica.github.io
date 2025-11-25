@@ -34,7 +34,10 @@
                 <button class="tab-button" data-tab="reports-advanced">📊 Relatórios XML</button>
                 <button class="tab-button" data-tab="barcode-generator">🔨 Cód. Barras</button>
                 <button class="tab-button" data-tab="proceda">🔧 Validador EDI</button>
+                <button class="tab-button" data-tab="cep-tool">📍 Consulta CEP</button>
+                <button class="tab-button" data-tab="base64-tool">🔐 Base64</button>
                 <button class="tab-button featured" data-tab="featured-products">⭐ Sugestões</button>
+                
             </nav>
 
             <div class="nav-overlay" id="nav-overlay"></div>
@@ -245,82 +248,205 @@
                 </div>
             </div>
         </section>
-
-        <section id="proceda" class="tab-content">
-            <h2 style="margin-bottom: 2rem; font-size: 2rem;">Validador de Arquivos EDI Logísticos</h2>
-            
+        <section id="cep-tool" class="tab-content">
+    <h2 style="margin-bottom: 2rem; font-size: 2rem;">Consulta de CEP com código IBGE</h2>
+    
+    <div class="zpl-viewer-layout"> <div class="editor-column">
             <div class="tool-card">
-                <h3>📁 Carregar Arquivo EDI</h3>
+                <h3>🔍 Buscar Endereço</h3>
                 <p style="color: var(--color-text-muted); margin-bottom: 1rem;">
-                    <strong>Suporta modelos:</strong><br>
-                    • <strong>NOTFIS 5.0</strong> <br>
-                    • <strong>NOTFIS 3.1</strong> <br>
-                    • <strong>OCOREN 5.0</strong> <br>
-                    • <strong>OCOREN 3.1</strong> <br>                    
+                    Digite o CEP para obter o endereço completo e o código IBGE.
                 </p>
-                <input type="file" id="proceda-input" class="input-file" accept=".txt,.edi,.proceda,.notfis,.ocoren">
                 
-                <div style="margin-top: 1rem;">
-                    <button id="open-edi-settings-modal" class="button-secondary">⚙️ Configurar Layouts</button>
-                </div>
-            </div>
-            
-            <div class="tool-card" id="proceda-tables" style="display: none;">
-                <h3>📊 Dados do Arquivo</h3>
-                <div style="margin-bottom: 1rem;">
-                    <label style="font-weight: 600; margin-right: 1rem;">Filtrar por Tipo de Registro:</label>
-                    <select id="proceda-filter" style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--color-border);">
-                        <option value="all">Todos os Registros</option>
-                    </select>
-                </div>
-                <div id="proceda-table-container" style="overflow-x: auto; max-height: 600px; overflow-y: auto;">
+                <div class="form-group">
+                    <label for="cep-input" style="display:block; margin-bottom: 0.5rem; font-weight: 600;">CEP:</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="cep-input" placeholder="00000-000" maxlength="9" style="flex: 1; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--color-border);">
+                        <button id="btn-buscar-cep" class="button-primary">Buscar</button>
                     </div>
-                <div class="button-group">
-                    <button id="proceda-export-csv" class="button-secondary">📥 Exportar CSV</button>
-                    <button id="proceda-export-json" class="button-secondary">📥 Exportar JSON</button>
-                    <button id="proceda-export-txt" class="button-secondary">📥 Exportar TXT</button>
                 </div>
+                <p id="cep-loading" style="display: none; color: var(--color-text-muted); margin-top: 1rem;">⏳ Buscando informações...</p>
+                <p id="cep-error" style="display: none; color: #dc2626; margin-top: 1rem; font-weight: 600;"></p>
             </div>
+        </div>
+
+        <div class="viewer-column">
+            <div id="cep-result-container" class="tool-card" style="display: none;">
+                <h3>📍 Resultado</h3>
                 
-            <div id="proceda-info" style="margin-top: 1.5rem; display: none;">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-                    <div style="padding: 1rem; background: var(--color-bg-secondary); border-radius: 8px; border-left: 4px solid var(--color-primary);">
-                        <div style="font-size: 0.85rem; color: var(--color-text-muted);">Formato</div>
-                        <div id="proceda-modelo" style="font-size: 1.2rem; font-weight: 600; margin-top: 0.25rem;">-</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                    
+                    <div style="grid-column: 1 / -1;">
+                        <label style="font-size: 0.8rem; color: var(--color-text-muted);">Logradouro</label>
+                        <div id="res-logradouro" style="font-weight: 600; font-size: 1.1rem;">-</div>
                     </div>
-                    <div style="padding: 1rem; background: var(--color-bg-secondary); border-radius: 8px; border-left: 4px solid var(--color-secondary);">
-                        <div style="font-size: 0.85rem; color: var(--color-text-muted);">Versão</div>
-                        <div id="proceda-versao" style="font-size: 1.2rem; font-weight: 600; margin-top: 0.25rem;">-</div>
+
+                    <div>
+                        <label style="font-size: 0.8rem; color: var(--color-text-muted);">Bairro</label>
+                        <div id="res-bairro" style="font-weight: 600;">-</div>
                     </div>
-                    <div style="padding: 1rem; background: var(--color-bg-secondary); border-radius: 8px; border-left: 4px solid var(--color-success);">
-                        <div style="font-size: 0.85rem; color: var(--color-text-muted);">Total de Registros</div>
-                        <div id="proceda-linhas" style="font-size: 1.2rem; font-weight: 600; margin-top: 0.25rem;">-</div>
+
+                    <div>
+                        <label style="font-size: 0.8rem; color: var(--color-text-muted);">UF</label>
+                        <div id="res-uf" style="font-weight: 600;">-</div>
                     </div>
-                    <div style="padding: 1rem; background: var(--color-bg-secondary); border-radius: 8px; border-left: 4px solid var(--color-error);">
-                        <div style="font-size: 0.85rem; color: var(--color-text-muted);">Status</div>
-                        <div id="proceda-status" style="font-size: 1.2rem; font-weight: 600; margin-top: 0.25rem;">-</div>
+
+                    <div>
+                        <label style="font-size: 0.8rem; color: var(--color-text-muted);">Cidade</label>
+                        <div id="res-localidade" style="font-weight: 600;">-</div>
                     </div>
+
+                    <div style="padding: 0.5rem; background: var(--color-bg-secondary); border-radius: 4px; border-left: 3px solid var(--color-primary);">
+                        <label style="font-size: 0.8rem; color: var(--color-text-muted);">Código IBGE</label>
+                        <div id="res-ibge" style="font-weight: 700; font-size: 1.2rem; color: var(--color-primary);">-</div>
+                    </div>
+
+                </div>
+                
+                <button id="btn-limpar-cep" class="button-secondary" style="margin-top: 1.5rem; width: 100%;">Nova Consulta</button>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="base64-tool" class="tab-content">
+    <div class="base64-header">
+        <h2 style="margin: 0; font-size: 1.8rem;">Conversor Base64</h2>
+        <span class="badge-utf8">UTF-8 Safe</span>
+    </div>
+    
+    <div class="converter-wrapper">
+        
+        <!-- CARD ESQUERDA: TEXTO -->
+        <div class="converter-box input-box">
+            <div class="box-header">
+                <h3>📝 Texto Plano</h3>
+                <!-- Botão estilo padrão, mas menor (btn-sm) -->
+                <button id="btn-clear-text" class="button-secondary btn-sm">
+                    🗑️ Limpar
+                </button>
+            </div>
+            <div class="textarea-container">
+                <textarea id="input-text" class="custom-textarea" placeholder="Digite ou cole seu texto aqui..."></textarea>
+            </div>
+            <div class="box-footer">
+                <span class="char-count">Entrada de dados</span>
+            </div>
+        </div>
+
+        <!-- COLUNA CENTRAL: AÇÕES (Botões Padrão) -->
+        <div class="converter-actions">
+            <!-- Usando exatamente o padrão solicitado -->
+            <button id="btn-encode" class="button-primary full-width-btn">
+                ⬇️ Codificar
+            </button>
+
+            <button id="btn-decode" class="button-primary full-width-btn">
+                ⬆️ Decodificar
+            </button>
+        </div>
+
+        <!-- CARD DIREITA: BASE64 -->
+        <div class="converter-box output-box">
+            <div class="box-header">
+                <h3>🔐 Base64</h3>
+                <div class="header-tools">
+                    <button id="btn-paste-base64" class="button-secondary btn-sm">
+                        📋 Colar
+                    </button>
+                    <button id="btn-clear-base64" class="button-secondary btn-sm">
+                        🗑️ Limpar
+                    </button>
                 </div>
             </div>
-            
-            <div id="proceda-errors" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--color-error-bg); border: 1px solid var(--color-error); border-radius: 8px;">
-                <h4 style="color: var(--color-error); margin-bottom: 0.5rem;">⚠️ Erros Encontrados:</h4>
-                <ul id="proceda-error-list" style="margin: 0; padding-left: 1.5rem; color: #dc2626;"></ul>
+            <div class="textarea-container">
+                <textarea id="input-base64" class="custom-textarea result-textarea" placeholder="O resultado aparecerá aqui..."></textarea>
             </div>
-            
-            <div id="proceda-warnings" style="display: none; margin-top: 1rem; padding: 1rem; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px;">
-                <h4 style="color: #d97706; margin-bottom: 0.5rem;">⚠️ Avisos:</h4>
-                <ul id="proceda-warning-list" style="margin: 0; padding-left: 1.5rem; color: #d97706;"></ul>
+            <div class="box-footer" style="justify-content: stretch;">
+                <!-- Botão de copiar ocupando espaço -->
+                <button id="btn-copy-base64" class="button-primary full-width-btn">
+                    📋 Copiar Resultado
+                </button>
             </div>
-        </section>
-        <section id="featured-products" class="tab-content">
-            <h2 style="margin-bottom: 2rem; font-size: 2rem;">⭐ Produtos Sugeridos</h2>
-            
-            <div class="product-showcase" id="showcase-container">
-                <p style="grid-column: 1 / -1; color: var(--color-text-muted);">A carregar sugestões...</p>
+        </div>
+
+    </div>
+</section>
+
+<section id="proceda" class="tab-content">
+    <h2 style="margin-bottom: 2rem; font-size: 2rem;">Validador de Arquivos EDI Logísticos</h2>
+    
+    <div class="tool-card">
+        <h3>📁 Carregar Arquivo EDI</h3>
+        <p style="color: var(--color-text-muted); margin-bottom: 1rem;">
+            <strong>Suporta modelos:</strong><br>
+            • <strong>NOTFIS 5.0</strong> <br>
+            • <strong>NOTFIS 3.1</strong> <br>
+            • <strong>OCOREN 5.0</strong> <br>
+            • <strong>OCOREN 3.1</strong> <br>                    
+        </p>
+        <input type="file" id="proceda-input" class="input-file" accept=".txt,.edi,.proceda,.notfis,.ocoren">
+        
+        <div style="margin-top: 1rem;">
+            <button id="open-edi-settings-modal" class="button-secondary">⚙️ Configurar Layouts</button>
+        </div>
+    </div>
+    
+    <div class="tool-card" id="proceda-tables" style="display: none;">
+        <h3>📊 Dados do Arquivo</h3>
+        <div style="margin-bottom: 1rem;">
+            <label style="font-weight: 600; margin-right: 1rem;">Filtrar por Tipo de Registro:</label>
+            <select id="proceda-filter" style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--color-border);">
+                <option value="all">Todos os Registros</option>
+            </select>
+        </div>
+        <div id="proceda-table-container" style="overflow-x: auto; max-height: 600px; overflow-y: auto;">
             </div>
-        </section>
-        </main>
+        <div class="button-group">
+            <button id="proceda-export-csv" class="button-secondary">📥 Exportar CSV</button>
+            <button id="proceda-export-json" class="button-secondary">📥 Exportar JSON</button>
+            <button id="proceda-export-txt" class="button-secondary">📥 Exportar TXT</button>
+        </div>
+    </div>
+        
+    <div id="proceda-info" style="margin-top: 1.5rem; display: none;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="padding: 1rem; background: var(--color-bg-secondary); border-radius: 8px; border-left: 4px solid var(--color-primary);">
+                <div style="font-size: 0.85rem; color: var(--color-text-muted);">Formato</div>
+                <div id="proceda-modelo" style="font-size: 1.2rem; font-weight: 600; margin-top: 0.25rem;">-</div>
+            </div>
+            <div style="padding: 1rem; background: var(--color-bg-secondary); border-radius: 8px; border-left: 4px solid var(--color-secondary);">
+                <div style="font-size: 0.85rem; color: var(--color-text-muted);">Versão</div>
+                <div id="proceda-versao" style="font-size: 1.2rem; font-weight: 600; margin-top: 0.25rem;">-</div>
+            </div>
+            <div style="padding: 1rem; background: var(--color-bg-secondary); border-radius: 8px; border-left: 4px solid var(--color-success);">
+                <div style="font-size: 0.85rem; color: var(--color-text-muted);">Total de Registros</div>
+                <div id="proceda-linhas" style="font-size: 1.2rem; font-weight: 600; margin-top: 0.25rem;">-</div>
+            </div>
+            <div style="padding: 1rem; background: var(--color-bg-secondary); border-radius: 8px; border-left: 4px solid var(--color-error);">
+                <div style="font-size: 0.85rem; color: var(--color-text-muted);">Status</div>
+                <div id="proceda-status" style="font-size: 1.2rem; font-weight: 600; margin-top: 0.25rem;">-</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="proceda-errors" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--color-error-bg); border: 1px solid var(--color-error); border-radius: 8px;">
+        <h4 style="color: var(--color-error); margin-bottom: 0.5rem;">⚠️ Erros Encontrados:</h4>
+        <ul id="proceda-error-list" style="margin: 0; padding-left: 1.5rem; color: #dc2626;"></ul>
+    </div>
+    
+    <div id="proceda-warnings" style="display: none; margin-top: 1rem; padding: 1rem; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px;">
+        <h4 style="color: #d97706; margin-bottom: 0.5rem;">⚠️ Avisos:</h4>
+        <ul id="proceda-warning-list" style="margin: 0; padding-left: 1.5rem; color: #d97706;"></ul>
+    </div>
+</section>
+<section id="featured-products" class="tab-content">
+    <h2 style="margin-bottom: 2rem; font-size: 2rem;">⭐ Produtos Sugeridos</h2>
+    
+    <div class="product-showcase" id="showcase-container">
+        <p style="grid-column: 1 / -1; color: var(--color-text-muted);">A carregar sugestões...</p>
+    </div>
+</section>
+</main>
 
     <div id="edi-settings-modal" class="modal-backdrop" style="display: none;">
         <div class="modal-content">
@@ -366,6 +492,8 @@
     <script src="reports-logic.js"></script>
 
     <script src="showcase.js"></script>
+    <script src="cep.js"></script>
+    <script src="base64.js"></script>
     
 </body>
 </html>

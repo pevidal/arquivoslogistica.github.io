@@ -677,3 +677,120 @@ input:focus, select:focus, textarea:focus {
 /* Utilitário de Carregamento */
 .loading { animation: pulse 1.5s infinite ease-in-out; }
 @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+/* ================================================= */
+/* FERRAMENTA BASE64 (LAYOUT & BOTÕES)               */
+/* ================================================= */
+
+/* Layout Grid 3 Colunas (Input - Botões - Output) */
+/* --- ESTILOS ESPECÍFICOS BASE64 --- */
+
+.converter-grid {
+    display: grid;
+    grid-template-columns: 1fr 180px 1fr; /* Coluna do meio mais larga para os botões */
+    gap: 1.5rem;
+    min-height: 500px;
+}
+
+.code-textarea {
+    width: 100%;
+    height: 100%;
+    border: none;
+    padding: 1rem;
+    resize: vertical;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.9rem;
+    outline: none;
+    background-color: #fff;
+    color: #374151;
+}
+
+.result-area {
+    background-color: #f8fafc; /* Fundo levemente diferente para Base64 */
+    color: #4b5563;
+}
+
+.actions-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* BOTÕES CHUNKY (ROBUSTOS) */
+.chunk-btn {
+    width: 100%;
+    padding: 1rem 0.5rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.1s ease;
+    position: relative;
+    top: 0;
+    /* Sombra sólida para efeito 3D */
+    box-shadow: 0 4px 0 rgba(0,0,0,0.15); 
+}
+
+.chunk-btn:active {
+    top: 4px; /* Move para baixo ao clicar */
+    box-shadow: 0 0 0 rgba(0,0,0,0.15); /* Remove a sombra */
+}
+
+.btn-label {
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.btn-icon {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+/* Cores dos Botões */
+.btn-blue {
+    background: #3b82f6;
+    color: white;
+    box-shadow: 0 5px 0 #1d4ed8; /* Sombra azul escura */
+}
+.btn-blue:hover { background: #2563eb; }
+.btn-blue:active { box-shadow: 0 0 0 #1d4ed8; }
+
+.btn-purple {
+    background: #8b5cf6;
+    color: white;
+    box-shadow: 0 5px 0 #6d28d9; /* Sombra roxa escura */
+}
+.btn-purple:hover { background: #7c3aed; }
+.btn-purple:active { box-shadow: 0 0 0 #6d28d9; }
+
+/* Link discreto de copiar */
+.copy-link {
+    background: none;
+    border: none;
+    color: #2563eb;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+.copy-link:hover { text-decoration: underline; }
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .converter-grid {
+        grid-template-columns: 1fr;
+    }
+    .chunk-btn {
+        flex-direction: row; /* Botões horizontais no mobile */
+        padding: 1rem;
+    }
+    .btn-label { font-size: 1rem; }
+}
